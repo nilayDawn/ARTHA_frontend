@@ -37,4 +37,7 @@ export const uploadDocument = async (formData) => {
   return res.data;
 };
 
+
+export const getTelegramLinkCode = () => API.post('/telegram/link-code');
+
 export default API;
