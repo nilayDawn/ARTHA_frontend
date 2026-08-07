@@ -1,79 +1,75 @@
 import { useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Receipt, 
-  PieChart, 
-  Target, 
-  FileText, 
-  LogOut, 
-  Bot, 
-  Menu, 
-  X 
-} from 'lucide-react';
+import { LayoutDashboard, Receipt, Target, PieChart, Sparkles, LogOut, UploadCloud } from 'lucide-react';
+import ChatDrawer from './ChatDrawer';
+import DocumentUploadModal from './DocumentUploadModal';
 
-const Layout = () => {
-  const { user, logout } = useAuth();
-  const location = useLocation();
+export default function Layout() {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+  const [chatOpen, setChatOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   const navItems = [
     { label: 'Overview', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Transactions', path: '/transactions', icon: Receipt },
     { label: 'Budgets', path: '/budgets', icon: PieChart },
     { label: 'Goals', path: '/goals', icon: Target },
-    { label: 'Documents', path: '/documents', icon: FileText },
   ];
 
   return (
-    <div className="min-h-screen flex bg-slate-900 text-slate-100">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-slate-800 border-r border-slate-700/60 p-4 shrink-0">
-        <div className="flex items-center gap-3 px-2 py-3 mb-6">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-            <Bot className="w-6 h-6" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-slate-800 bg-slate-900/50 flex flex-col justify-between">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl">
+              <Sparkles size={24} />
+            </div>
+            <h1 className="text-xl font-bold bg-linear-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
+              FinPilot AI
+            </h1>
           </div>
-          <span className="font-bold text-lg text-white tracking-wide">FinPilot AI</span>
+
+          <nav className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = location.pathname === item.path;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    active
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        <nav className="flex-1 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? 'bg-emerald-600/15 text-emerald-400 border border-emerald-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-slate-700/60 pt-4 mt-auto">
-          <div className="px-3 mb-3">
-            <p className="text-xs text-slate-500">Logged in as</p>
-            <p className="text-sm font-medium text-slate-300 truncate">{user?.email}</p>
-          </div>
+        <div className="p-4 border-t border-slate-800 space-y-2">
           <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+            onClick={() => setUploadOpen(true)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-sm font-medium transition-colors border border-slate-700"
           >
-            <LogOut className="w-5 h-5" />
+            <UploadCloud size={18} className="text-emerald-400" />
+            <span>Upload Document</span>
+          </button>
+
+          <button
+            onClick={() => signOut()}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-medium transition-colors"
+          >
+            <LogOut size={18} />
             <span>Sign Out</span>
           </button>
         </div>
@@ -81,62 +77,29 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <header className="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/60 p-4 flex items-center justify-between sticky top-0 z-10">
+        <header className="h-16 border-b border-slate-800 bg-slate-900/30 px-6 flex items-center justify-between">
+          <span className="text-xs text-slate-400">Logged in as {user?.email}</span>
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-400 hover:text-white"
+            onClick={() => setChatOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-emerald-900/20"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <Sparkles size={16} />
+            <span>AI Assistant</span>
           </button>
-
-          <h1 className="text-lg font-semibold text-white capitalize">
-            {location.pathname.replace('/', '') || 'Dashboard'}
-          </h1>
-
-          <div className="flex items-center gap-3">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs font-medium text-slate-400">System Online</span>
-          </div>
         </header>
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-800 border-b border-slate-700 px-4 py-3 space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${
-                    active ? 'bg-emerald-600/15 text-emerald-400' : 'text-slate-400'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Sign Out</span>
-            </button>
-          </div>
-        )}
-
-        {/* Page Content Outlet */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </div>
+
+      {/* Modals & Drawers */}
+      <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+      <DocumentUploadModal
+        isOpen={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        onSuccess={() => navigate('/dashboard')}
+      />
     </div>
   );
-};
-
-export default Layout;
+}
