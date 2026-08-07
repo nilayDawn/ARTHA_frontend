@@ -131,6 +131,7 @@ frontend/
     │   ├── Layout.jsx             # Authenticated app shell (sidebar, header, content)
     │   ├── ChatDrawer.jsx         # AI assistant chat slide-in drawer
     │   ├── DocumentUploadModal.jsx# Receipt/statement upload modal
+    │   ├── TelegramModel.jsx      # "Connect Telegram" modal (account-linking code)
     │   └── ProtectedRoute.jsx     # Route guard for authenticated pages
     ├── context/
     │   └── AuthContext.jsx        # Global auth provider + useAuth hook
@@ -228,18 +229,20 @@ The `AuthProvider` component:
 | `createGoal(payload)` | POST   | `/goals`             | Create a goal                              |
 | `chatWithAgent(message, history)` | POST | `/chat` | Send chat message + history to AI agent |
 | `uploadDocument(formData)` | POST | `/documents/upload` | Upload image for OCR extraction (multipart) |
+| `getTelegramLinkCode()` | POST | `/telegram/link-code` | Generate a `FP-XXXX` code to link the Telegram bot |
 
 `uploadDocument` sets `Content-Type: multipart/form-data` and passes a `FormData` containing the file.
+`getTelegramLinkCode` is called by `TelegramModal` and returns `{ code, expires_in_seconds }`.
 
 ---
 
 ## Components
 
 ### `Layout.jsx` — Authenticated App Shell
-- **Sidebar** (w-64): brand/logo ("FinPilot AI"), navigation links (Overview, Transactions, Budgets, Goals), an **Upload Document** button, and a **Sign Out** button.
-- **Header**: shows logged-in user's email and an **AI Assistant** button that opens the chat drawer.
+- **Sidebar** (w-64): brand/logo ("FinPilot AI"), navigation links (Overview, Transactions, Budgets, Goals), a **Connect Telegram** button, an **Upload Receipt** button, and a **Sign Out** button.
+- **Header**: shows logged-in user's email, a mobile **Telegram** button, and an **AI Assistant** button that opens the chat drawer.
 - **Main content area**: renders nested routes via `<Outlet />`.
-- Manages local state for `chatOpen` and `uploadOpen` to toggle the drawer and modal.
+- Manages local state for `chatOpen`, `uploadOpen`, and `telegramOpen` to toggle the drawer and modals.
 - Uses `lucide-react` icons and highlights the active nav item based on `location.pathname`.
 
 ### `ChatDrawer.jsx` — AI Assistant
@@ -258,6 +261,14 @@ The `AuthProvider` component:
 - Displays a spinner ("Gemini 2.5 Flash Analyzing Receipt...") during processing.
 - On success, shows the extracted transaction (merchant, amount, category, date) and calls the `onSuccess` callback.
 - On failure, surfaces the backend error detail.
+
+### `TelegramModal.jsx` — Connect Telegram Assistant
+- Modal opened from the **Connect Telegram** button in `Layout` (sidebar + mobile header).
+- On open, calls `getTelegramLinkCode()` to fetch a fresh single-use code (valid **10 minutes**).
+- Displays the `FP-XXXX` code prominently with a **Copy Command** button (copies `/link FP-XXXX` to the clipboard).
+- Provides a deep link **Open Bot** → `https://t.me/FinPilotAIBot?start=FP-XXXX` so the user can launch the bot pre-seeded with their code.
+- Includes numbered instructions: open the bot in Telegram, then send `/link <code>`.
+- Handles loading and error states gracefully.
 
 ### `ProtectedRoute.jsx`
 - Route guard wrapper (see [Authentication](#authentication--state-management)).
@@ -344,6 +355,7 @@ Defined in `package.json`:
 2. **Financial data**: `Dashboard` fetches `/transactions`, `/budgets`, `/goals` and renders cards + charts.
 3. **AI Chat**: `ChatDrawer` posts messages + history to `/chat`; the backend (LangGraph + Gemini 2.5) returns a response and optionally `memories_used`.
 4. **Documents**: `DocumentUploadModal` POSTs an image to `/documents/upload`; the backend runs OCR (Gemini 2.5 Flash) and returns extracted transaction data.
+5. **Telegram linking**: `TelegramModal` POSTs to `/telegram/link-code` to get an `FP-XXXX` code; the user then sends `/link <code>` to the FinPilot AI bot, and the backend maps their `telegram_chat_id` to their Supabase `user_id`. From then on, the bot accepts expense text, receipt photos, and PDF bank statements.
 
 > The frontend must be pointed at a running backend via `VITE_BACKEND_API_URL`, and Supabase credentials must be configured for auth to function end-to-end.
 
@@ -351,10 +363,11 @@ Defined in `package.json`:
 
 ## Current Status & Known Limitations
 
-- ✅ **Implemented**: Auth (login/signup/logout), protected routing, app shell/layout, AI chat drawer, document upload modal, dashboard with summary cards + charts + recent transactions.
+- ✅ **Implemented**: Auth (login/signup/logout), protected routing, app shell/layout, AI chat drawer, document upload modal, **Telegram connection modal**, and dashboard with summary cards + charts + recent transactions.
 - ⏳ **Placeholders**: Transactions Management, Budget Tracking, Financial Goals, and Documents & Receipts pages render temporary headings and are not yet fully built.
 - ⚠️ **Hardcoded income**: The Dashboard uses a fixed `monthlyIncome` of `₹60,000` as a benchmark; it is not yet user-configurable.
 - ⚠️ **Environment required**: Supabase keys and backend URL must be configured for the app to function.
+- ⚠️ **Telegram bot URL**: The "Open Bot" deep link points to `t.me/FinPilotAIBot`; this must match the bot name registered with BotFather, and the backend webhook must be deployed and configured for production use.
 - 🧹 **Legacy CSS**: `src/App.css` contains unused Vite template styles.
 
 ---
