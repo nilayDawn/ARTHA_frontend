@@ -1,47 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import api from '../services/api';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  PiggyBank, 
-  ArrowUpRight, 
-  PlusCircle, 
-  Receipt 
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  PiggyBank,
+  ArrowUpRight,
+  PlusCircle,
+  Receipt,
+  BarChart3,
+  Calendar
 } from 'lucide-react';
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
-  Tooltip, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  AreaChart,
+  Area
 } from 'recharts';
 
-const CATEGORY_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+const CATEGORY_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#64748b'];
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [budgets, setBudgets] = useState([]);
-  const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Month Filter state - defaults to current calendar month (YYYY-MM)
+  const currentMonthStr = new Date().toISOString().slice(0, 7);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [txRes, bgRes, glRes] = await Promise.allSettled([
+        const [txRes, bgRes] = await Promise.allSettled([
           api.get('/transactions'),
           api.get('/budgets'),
-          api.get('/goals'),
         ]);
 
-        if (txRes.status === 'fulfilled') setTransactions(txRes.value.data);
-        if (bgRes.status === 'fulfilled') setBudgets(bgRes.value.data);
-        if (glRes.status === 'fulfilled') setGoals(glRes.value.data);
+        if (txRes.status === 'fulfilled') setTransactions(txRes.value.data || []);
+        if (bgRes.status === 'fulfilled') setBudgets(bgRes.value.data || []);
       } catch (err) {
         console.error('Error loading dashboard data:', err);
       } finally {
@@ -52,14 +57,33 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // Compute Financial Summaries
-  const totalExpenses = transactions.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
-  const monthlyIncome = 60000; // Default benchmark income or can be customized
-  const savings = Math.max(0, monthlyIncome - totalExpenses);
-  const savingsRate = Math.round((savings / monthlyIncome) * 100);
+  // Filter transactions for the selected month (or all if 'ALL')
+  const monthlyTransactions = useMemo(() => {
+    if (!selectedMonth || selectedMonth === 'ALL') return transactions;
+    return transactions.filter((t) => {
+      if (!t.date) return false;
+      const txMonth = String(t.date).slice(0, 7);
+      return txMonth === selectedMonth;
+    });
+  }, [transactions, selectedMonth]);
 
-  // Prepare Category Spending Chart Data
-  const categoryMap = transactions.reduce((acc, curr) => {
+  // Compute Financial Overview based on monthlyTransactions
+  const incomeFromTx = monthlyTransactions
+    .filter((t) => (t.category || '').toLowerCase() === 'income' || (t.type || '').toLowerCase() === 'income')
+    .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+
+  const monthlyIncome = incomeFromTx > 0 ? incomeFromTx : 60000;
+
+  const expenseTx = monthlyTransactions.filter(
+    (t) => (t.category || '').toLowerCase() !== 'income' && (t.type || '').toLowerCase() !== 'income'
+  );
+  const totalExpenses = expenseTx.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
+
+  const savings = Math.max(0, monthlyIncome - totalExpenses);
+  const savingsRate = monthlyIncome > 0 ? Math.round((savings / monthlyIncome) * 100) : 0;
+
+  // Category Spending Data (for active month)
+  const categoryMap = expenseTx.reduce((acc, curr) => {
     const cat = curr.category || 'Other';
     acc[cat] = (acc[cat] || 0) + Number(curr.amount || 0);
     return acc;
@@ -70,79 +94,117 @@ const Dashboard = () => {
     value: categoryMap[cat],
   }));
 
-  // Prepare Bar Chart Data for Budgets vs Spending
-  const budgetVsSpendingData = budgets.map((b) => {
-    const spent = transactions
-      .filter((t) => t.category?.toLowerCase() === b.category?.toLowerCase())
-      .reduce((acc, t) => acc + Number(t.amount || 0), 0);
-    return {
-      category: b.category,
-      Limit: Number(b.monthly_limit || b.limit || 0),
-      Spent: spent,
-    };
-  });
+  // Monthly Spending Trends Data (all-time trend across months)
+  const allExpenseTx = transactions.filter(
+    (t) => (t.category || '').toLowerCase() !== 'income' && (t.type || '').toLowerCase() !== 'income'
+  );
+  const monthlyTrendMap = allExpenseTx.reduce((acc, curr) => {
+    if (!curr.date) return acc;
+    const monthKey = new Date(curr.date).toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
+    acc[monthKey] = (acc[monthKey] || 0) + Number(curr.amount || 0);
+    return acc;
+  }, {});
+
+  const monthlyTrendData = Object.keys(monthlyTrendMap).map((m) => ({
+    month: m,
+    Spent: monthlyTrendMap[m],
+  }));
+
+  // Budgets vs Actual Spending Data for selected month
+  const budgetVsSpendingData = budgets
+    .filter((b) => !selectedMonth || selectedMonth === 'ALL' || !b.month || b.month === selectedMonth)
+    .map((b) => {
+      const spent = expenseTx
+        .filter((t) => {
+          const cat = (t.category || '').toLowerCase();
+          const bCat = (b.category || '').toLowerCase();
+          if (bCat.includes('food') && (cat.includes('food') || cat.includes('dining') || cat.includes('restaurant'))) return true;
+          return cat === bCat;
+        })
+        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+
+      return {
+        category: b.category,
+        Limit: Number(b.monthly_limit || b.limit || 0),
+        Spent: spent,
+      };
+    });
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mr-3"></div>
-        <span>Loading financial overview...</span>
+      <div className="flex items-center justify-center h-64 text-neutral-500 gap-2">
+        <div className="animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent"></div>
+        <span className="text-xs">Loading Financial Overview...</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 w-full max-w-7xl mx-auto">
+      {/* Header & Month Selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">Financial Overview</h1>
+          <p className="text-xs text-neutral-500 mt-0.5">Real-time summary of monthly income, expenses, and savings rate</p>
+        </div>
+
+        {/* Month Selector */}
+        <div className="flex items-center gap-2 bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-1.5 self-start sm:self-auto">
+          <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-xs text-neutral-400 font-medium">Period:</span>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="bg-transparent text-xs text-white focus:outline-none cursor-pointer"
+          >
+            <option value={currentMonthStr} className="bg-neutral-950 text-white">Current Month ({currentMonthStr})</option>
+            <option value="ALL" className="bg-neutral-950 text-white">All-Time Cumulative</option>
+          </select>
+        </div>
+      </div>
+
       {/* 1. Summary Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Monthly Income Card */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-medium text-slate-400">Monthly Income</span>
-            <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
-              <Wallet className="w-5 h-5" />
-            </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {/* Monthly Income */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider">
+            <span>Monthly Income</span>
+            <Wallet className="w-3.5 h-3.5 text-emerald-500/60" />
           </div>
-          <div className="text-2xl font-bold text-white">₹{monthlyIncome.toLocaleString()}</div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span className="text-emerald-400 flex items-center"><TrendingUp className="w-3 h-3 mr-0.5" /> Est. Base</span>
+          <div className="text-xl font-semibold text-emerald-400">₹{monthlyIncome.toLocaleString()}</div>
+          <p className="text-[11px] text-neutral-600 flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-emerald-500" /> {selectedMonth === currentMonthStr ? 'Current Month' : 'Selected Period'}
           </p>
         </div>
 
-        {/* Total Expenses Card */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-medium text-slate-400">Total Expenses</span>
-            <div className="p-2 bg-rose-500/10 text-rose-400 rounded-lg">
-              <TrendingDown className="w-5 h-5" />
-            </div>
+        {/* Total Expenses */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider">
+            <span>Total Expenses</span>
+            <TrendingDown className="w-3.5 h-3.5 text-red-500/60" />
           </div>
-          <div className="text-2xl font-bold text-white">₹{totalExpenses.toLocaleString()}</div>
-          <p className="text-xs text-slate-400 mt-1">{transactions.length} recorded transactions</p>
+          <div className="text-xl font-semibold text-red-400">₹{totalExpenses.toLocaleString()}</div>
+          <p className="text-[11px] text-neutral-600">{expenseTx.length} records in period</p>
         </div>
 
-        {/* Savings Card */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-medium text-slate-400">Net Savings</span>
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
-              <PiggyBank className="w-5 h-5" />
-            </div>
+        {/* Savings */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider">
+            <span>Savings</span>
+            <PiggyBank className="w-3.5 h-3.5 text-blue-500/60" />
           </div>
-          <div className="text-2xl font-bold text-white">₹{savings.toLocaleString()}</div>
-          <p className="text-xs text-slate-400 mt-1">Income minus expenses</p>
+          <div className="text-xl font-semibold text-blue-400">₹{savings.toLocaleString()}</div>
+          <p className="text-[11px] text-neutral-600">Income minus expenses</p>
         </div>
 
-        {/* Savings Rate Card */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-medium text-slate-400">Savings Rate</span>
-            <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
-              <ArrowUpRight className="w-5 h-5" />
-            </div>
+        {/* Savings Rate */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider">
+            <span>Savings Rate</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-purple-500/60" />
           </div>
-          <div className="text-2xl font-bold text-white">{savingsRate}%</div>
-          <div className="w-full bg-slate-700 h-2 rounded-full mt-3 overflow-hidden">
+          <div className="text-xl font-semibold text-purple-400">{savingsRate}%</div>
+          <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden">
             <div
               className="bg-purple-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.min(100, Math.max(0, savingsRate))}%` }}
@@ -151,66 +213,69 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* 2. Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Breakdown (Pie Chart) */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <h3 className="text-lg font-semibold text-white mb-4">Spending by Category</h3>
+      {/* 2. Expense Analytics & Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Spending by Category (Pie Chart & List) */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3 flex flex-col justify-between">
+          <h3 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Spending by Category ({selectedMonth})</h3>
           {categoryChartData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {categoryChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '0.5rem', color: '#fff' }}
-                    formatter={(value) => [`₹${value}`, 'Amount']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="h-48 w-full flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={45}
+                      outerRadius={65}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {categoryChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '0.5rem', color: '#fff', fontSize: '12px' }}
+                      formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Spent']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 border-t border-neutral-900">
                 {categoryChartData.map((item, idx) => (
-                  <div key={item.name} className="flex items-center gap-1.5 text-xs text-slate-300">
+                  <div key={item.name} className="flex items-center gap-1.5 text-xs text-neutral-400">
                     <span
-                      className="w-3 h-3 rounded-full"
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] }}
                     ></span>
-                    <span>{item.name}</span>
+                    <span>{item.name}:</span>
+                    <strong className="text-neutral-200">₹{item.value.toLocaleString()}</strong>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-500">
-              <Receipt className="w-10 h-10 mb-2 stroke-1" />
-              <p>No expense data available to visualize.</p>
+            <div className="h-48 flex flex-col items-center justify-center text-neutral-600 space-y-1">
+              <Receipt className="w-8 h-8 stroke-1 text-neutral-700" />
+              <p className="text-xs">No expense data for this month</p>
             </div>
           )}
         </div>
 
-        {/* Budget vs Spending (Bar Chart) */}
-        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-          <h3 className="text-lg font-semibold text-white mb-4">Budgets vs Actual Spent</h3>
+        {/* Budgets vs Actual Spent */}
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3 flex flex-col justify-between">
+          <h3 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Budgets vs Actual Spent</h3>
           {budgetVsSpendingData.length > 0 ? (
-            <div className="h-64">
+            <div className="h-60 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={budgetVsSpendingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="category" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} />
+                <BarChart data={budgetVsSpendingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#18181b" />
+                  <XAxis dataKey="category" stroke="#71717a" fontSize={11} />
+                  <YAxis stroke="#71717a" fontSize={11} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '0.5rem', color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '0.5rem', color: '#fff', fontSize: '12px' }}
                   />
                   <Bar dataKey="Limit" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Spent" fill="#ef4444" radius={[4, 4, 0, 0]} />
@@ -218,49 +283,84 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-500">
-              <PlusCircle className="w-10 h-10 mb-2 stroke-1" />
-              <p>No budgets created yet.</p>
+            <div className="h-60 flex flex-col items-center justify-center text-neutral-600 space-y-1">
+              <PlusCircle className="w-8 h-8 stroke-1 text-neutral-700" />
+              <p className="text-xs">No budgets active for this month</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* 3. Recent Transactions Preview Table */}
-      <div className="bg-slate-800 p-5 rounded-xl border border-slate-700/60 shadow-lg">
-        <h3 className="text-lg font-semibold text-white mb-4">Recent Transactions</h3>
-        {transactions.length > 0 ? (
+      {/* Monthly Trends Chart */}
+      {monthlyTrendData.length > 0 && (
+        <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Monthly Spending Trends (Historical)</h3>
+            <BarChart3 className="w-4 h-4 text-emerald-500/60" />
+          </div>
+          <div className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthlyTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#18181b" />
+                <XAxis dataKey="month" stroke="#71717a" fontSize={11} />
+                <YAxis stroke="#71717a" fontSize={11} />
+                <Tooltip contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '0.5rem', color: '#fff', fontSize: '12px' }} />
+                <Area type="monotone" dataKey="Spent" stroke="#10b981" fillOpacity={1} fill="url(#colorSpent)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Recent Transactions Table */}
+      <div className="bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-neutral-900">
+          <h3 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Recent Transactions</h3>
+        </div>
+        {monthlyTransactions.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="text-xs uppercase bg-slate-900/50 text-slate-400 border-b border-slate-700">
+            <table className="w-full text-left text-[13px]">
+              <thead className="text-[11px] uppercase text-neutral-600 border-b border-neutral-900 bg-neutral-950">
                 <tr>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Merchant</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3 text-right">Amount</th>
+                  <th className="px-4 py-2.5 font-medium">Date</th>
+                  <th className="px-4 py-2.5 font-medium">Merchant</th>
+                  <th className="px-4 py-2.5 font-medium">Category</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/60">
-                {transactions.slice(0, 5).map((t) => (
-                  <tr key={t.id || Math.random()} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="px-4 py-3 text-slate-400">{t.date ? new Date(t.date).toLocaleDateString() : 'N/A'}</td>
-                    <td className="px-4 py-3 font-medium text-white">{t.merchant || 'Unknown'}</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2.5 py-1 text-xs rounded-full bg-slate-700 text-slate-300 font-medium">
-                        {t.category}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold text-rose-400">
-                      -₹{Number(t.amount).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {monthlyTransactions.slice(0, 5).map((t) => {
+                  const isInc = (t.category || '').toLowerCase() === 'income' || (t.type || '').toLowerCase() === 'income';
+
+                  return (
+                    <tr key={t.id || Math.random()} className="border-b border-neutral-900/50 hover:bg-neutral-900/30 transition-colors">
+                      <td className="px-4 py-2.5 text-neutral-500 text-xs">
+                        {t.date ? new Date(t.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                      </td>
+                      <td className="px-4 py-2.5 font-medium text-neutral-200">{t.merchant || 'Unknown'}</td>
+                      <td className="px-4 py-2.5 text-neutral-400 text-xs">
+                        <span className="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300">
+                          {t.category || 'Other'}
+                        </span>
+                      </td>
+                      <td className={`px-4 py-2.5 text-right font-medium ${isInc ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {isInc ? '+' : '-'}₹{Number(t.amount || 0).toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="text-sm text-slate-500 text-center py-6">
-            No transactions found. Start adding transactions or uploading receipts.
+          <p className="text-xs text-neutral-600 text-center py-8">
+            No transactions found for this month. Add transactions or upload receipts to view activity.
           </p>
         )}
       </div>

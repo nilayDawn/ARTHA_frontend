@@ -6,7 +6,7 @@ export default function ChatDrawer({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hello! I'm your Finance Assistant. Ask me anything about your spending, savings goals, or budgets!",
+      content: "Hello! I'm FinPilot, your AI financial employee. Ask me anything about your income, expenses, savings goals, or budgets!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -56,7 +56,7 @@ export default function ChatDrawer({ isOpen, onClose }) {
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I ran into an error processing your request. Please try again.',
+          content: 'Sorry, I ran into an issue connecting with the AI agent. Please try again.',
         },
       ]);
     } finally {
@@ -65,25 +65,25 @@ export default function ChatDrawer({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-sm transition-opacity">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/70 backdrop-blur-sm transition-opacity">
       <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-        <div className="w-screen max-w-md bg-slate-900 border-l border-slate-800 text-slate-100 flex flex-col shadow-2xl">
+        <div className="w-screen max-w-md bg-neutral-950 border-l border-neutral-900 text-neutral-100 flex flex-col shadow-2xl">
           {/* Header */}
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80 backdrop-blur">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
-                <Sparkles size={20} />
+          <div className="p-4 border-b border-neutral-900 flex items-center justify-between bg-neutral-950/90 backdrop-blur">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-100">FinPilot Assistant</h3>
-                <p className="text-xs text-slate-400">Powered by LangGraph & Gemini 2.5</p>
+                <h3 className="font-semibold text-white text-sm">FinPilot AI CFO</h3>
+                <p className="text-[11px] text-neutral-500">Gemini 2.5 Flash • Financial Agent</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900 transition-colors cursor-pointer"
             >
-              <X size={20} />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
@@ -92,42 +92,42 @@ export default function ChatDrawer({ isOpen, onClose }) {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-1">
-                    <Bot size={16} />
+                  <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Bot className="w-3.5 h-3.5" />
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[82%] rounded-xl px-3.5 py-2.5 text-xs leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-emerald-600 text-white rounded-br-none'
-                      : 'bg-slate-800/80 border border-slate-700/50 text-slate-200 rounded-bl-none'
+                      ? 'bg-emerald-500 text-black font-medium rounded-br-none'
+                      : 'bg-neutral-900 border border-neutral-800 text-neutral-200 rounded-bl-none'
                   }`}
                 >
                   <div className="whitespace-pre-wrap">{msg.content}</div>
                   {msg.memories && msg.memories.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-slate-700/50 text-[11px] text-slate-400">
-                      💡 Context recalled: {msg.memories.join(', ')}
+                    <div className="mt-2 pt-2 border-t border-neutral-800 text-[10px] text-neutral-500">
+                      Context recalled: {msg.memories.join(', ')}
                     </div>
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center shrink-0 mt-1">
-                    <User size={16} />
+                  <div className="w-7 h-7 rounded-full bg-neutral-800 text-neutral-300 flex items-center justify-center shrink-0 mt-0.5">
+                    <User className="w-3.5 h-3.5" />
                   </div>
                 )}
               </div>
             ))}
             {loading && (
-              <div className="flex gap-3 justify-start">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Bot size={16} />
+              <div className="flex gap-2.5 justify-start">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Bot className="w-3.5 h-3.5" />
                 </div>
-                <div className="bg-slate-800/80 border border-slate-700/50 rounded-2xl px-4 py-3 text-slate-400 text-sm flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin text-emerald-400" />
-                  <span>FinPilot is analyzing your financial context...</span>
+                <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-neutral-400 text-xs flex items-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                  <span>Analyzing financial context...</span>
                 </div>
               </div>
             )}
@@ -135,21 +135,21 @@ export default function ChatDrawer({ isOpen, onClose }) {
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSend} className="p-4 border-t border-slate-800 bg-slate-900">
-            <div className="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl p-1.5 focus-within:border-emerald-500/50 transition-colors">
+          <form onSubmit={handleSend} className="p-3 border-t border-neutral-900 bg-neutral-950">
+            <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-lg p-1.5 focus-within:border-neutral-700 transition-colors">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about spending, goals, or budgets..."
-                className="flex-1 bg-transparent px-3 py-1.5 text-sm text-slate-100 placeholder-slate-400 focus:outline-none"
+                className="flex-1 bg-transparent px-2.5 py-1 text-xs text-white placeholder-neutral-600 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || loading}
-                className="p-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+                className="p-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-medium rounded-md transition-colors cursor-pointer"
               >
-                <Send size={16} />
+                <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </form>

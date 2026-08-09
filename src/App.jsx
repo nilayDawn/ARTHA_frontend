@@ -8,9 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
-
-const Documents = () => <h2 className="text-2xl font-bold text-white">Documents & Receipts</h2>;
-
+import Documents from './pages/Documents';
 
 function App() {
   return (

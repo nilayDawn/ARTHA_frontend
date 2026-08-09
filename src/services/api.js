@@ -16,8 +16,9 @@ API.interceptors.request.use(async (config) => {
 });
 
 // Finance Endpoints
-export const getTransactions = () => API.get('/transactions');
+export const getTransactions = (params) => API.get('/transactions', { params });
 export const createTransaction = (payload) => API.post('/transactions', payload);
+export const updateTransaction = (id, payload) => API.patch(`/transactions/${id}`, payload);
 export const deleteTransaction = (id) => API.delete(`/transactions/${id}`);
 
 export const getBudgets = () => API.get('/budgets');
@@ -29,21 +30,21 @@ export const createGoal = (payload) => API.post('/goals', payload);
 export const updateGoal = (id, payload) => API.patch(`/goals/${id}`, payload);
 export const deleteGoal = (id) => API.delete(`/goals/${id}`);
 
-
 // AI Chat Endpoint
 export const chatWithAgent = async (message, history = []) => {
   const res = await API.post('/chat', { message, history });
   return res.data;
 };
 
-// Document Upload Endpoint
+// Document & Receipt Upload Endpoints
 export const uploadDocument = async (formData) => {
   const res = await API.post('/documents/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return res.data;
 };
-
+export const getDocuments = () => API.get('/documents');
+export const deleteDocument = (id) => API.delete(`/documents/${id}`);
 
 export const getTelegramLinkCode = () => API.post('/telegram/link-code');
 

@@ -111,10 +111,10 @@ export default function Goals() {
     try {
       setDeletingId(id);
       await deleteGoal(id);
-      setGoals((prev) => prev.filter((g) => g.id !== id));
+      setGoals((prev) => prev.filter((g) => String(g.id) !== String(id)));
     } catch (err) {
       console.error('Failed to delete goal:', err);
-      alert('Failed to delete goal.');
+      alert(err.response?.data?.detail || 'Failed to delete goal.');
     } finally {
       setDeletingId(null);
     }
@@ -127,145 +127,157 @@ export default function Goals() {
   const avgProgress = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Financial Goals</h1>
-          <p className="text-sm text-slate-400">Track savings targets, deadlines, and milestone progress</p>
+          <h1 className="text-xl font-semibold text-white tracking-tight">Financial Goals</h1>
+          <p className="text-xs text-neutral-500 mt-0.5">Track MacBook Purchase, Emergency Fund, Education & Vacation savings</p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer"
+          className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
         >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           New Goal
         </button>
       </div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-            <span>Total Target</span>
-            <Target className="w-4 h-4 text-emerald-400" />
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+            <span>Target</span>
+            <Target className="w-3.5 h-3.5 text-emerald-500/50" />
           </div>
-          <div className="text-2xl font-bold text-white">₹{totalTarget.toLocaleString()}</div>
+          <div className="text-lg font-semibold text-white">₹{totalTarget.toLocaleString()}</div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-            <span>Total Saved</span>
-            <PiggyBank className="w-4 h-4 text-sky-400" />
+        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+            <span>Saved</span>
+            <PiggyBank className="w-3.5 h-3.5 text-blue-500/50" />
           </div>
-          <div className="text-2xl font-bold text-sky-400">₹{totalSaved.toLocaleString()}</div>
+          <div className="text-lg font-semibold text-blue-400">₹{totalSaved.toLocaleString()}</div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-            <span>Overall Progress</span>
-            <TrendingUp className="w-4 h-4 text-purple-400" />
+        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+            <span>Progress</span>
+            <TrendingUp className="w-3.5 h-3.5 text-purple-500/50" />
           </div>
-          <div className="text-2xl font-bold text-white">{avgProgress}%</div>
+          <div className="text-lg font-semibold text-white">{avgProgress}%</div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-            <span>Achieved Goals</span>
-            <CheckCircle className="w-4 h-4 text-emerald-400" />
+        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+            <span>Achieved</span>
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500/50" />
           </div>
-          <div className="text-2xl font-bold text-emerald-400">{completedGoalsCount} / {goals.length}</div>
+          <div className="text-lg font-semibold text-emerald-400">{completedGoalsCount} / {goals.length}</div>
         </div>
       </div>
 
-      {/* Error state */}
+      {/* Error */}
       {error && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm rounded-xl flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="py-2.5 px-3.5 bg-red-500/5 border border-red-500/10 text-red-400 text-xs rounded-lg flex items-center gap-2">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Goals Grid */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-slate-400 gap-2">
-          <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
-          <span>Loading goals...</span>
+        <div className="flex items-center justify-center h-40 text-neutral-500 gap-2">
+          <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
+          <span className="text-xs">Loading goals...</span>
         </div>
       ) : goals.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 p-12 rounded-xl text-center space-y-3">
-          <Target className="w-12 h-12 mx-auto stroke-1 text-slate-600" />
-          <p className="text-slate-400 font-medium">No financial goals set yet</p>
-          <p className="text-xs text-slate-500">Create goals like Emergency Fund, Vacation, or Major Purchases.</p>
+        <div className="bg-neutral-950 border border-neutral-900 py-16 rounded-xl text-center space-y-2">
+          <Target className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
+          <p className="text-neutral-500 text-[13px]">No financial goals set yet</p>
+          <p className="text-neutral-600 text-[11px]">Create savings goals like MacBook Purchase or Emergency Fund</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {goals.map((g) => {
             const target = Number(g.target_amount || 0);
             const saved = Number(g.saved_amount || 0);
             const percent = target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
-            const remaining = Math.max(0, target - saved);
             const isCompleted = saved >= target;
+
+            // Format Expected Completion Date
+            let expectedCompletion = 'November 2026';
+            if (g.deadline) {
+              expectedCompletion = new Date(g.deadline).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            }
 
             return (
               <div
                 key={g.id}
-                className={`bg-slate-900 border ${
-                  isCompleted ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-slate-800'
-                } rounded-2xl p-5 shadow-lg space-y-4 hover:border-slate-700 transition flex flex-col justify-between`}
+                className={`bg-neutral-950 border ${
+                  isCompleted ? 'border-emerald-500/30' : 'border-neutral-900'
+                } rounded-xl p-4 space-y-3 hover:border-neutral-800 transition-colors flex flex-col justify-between`}
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-white text-base flex items-center gap-2">
+                      <h3 className="font-semibold text-white text-sm flex items-center gap-1.5">
                         {g.goal_name}
                         {isCompleted && (
-                          <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
-                            Achieved!
+                          <span className="px-1.5 py-0.5 text-[9px] uppercase tracking-wider font-bold bg-emerald-500/10 text-emerald-400 rounded">
+                            Done
                           </span>
                         )}
                       </h3>
-                      {g.deadline && (
-                        <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                          <Calendar className="w-3 h-3 text-slate-500" />
-                          Target: {new Date(g.deadline).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                        </span>
-                      )}
+                      <p className="text-[11px] text-neutral-500 flex items-center gap-1 mt-0.5">
+                        <Calendar className="w-3 h-3 text-neutral-600" />
+                        Expected completion: <span className="text-neutral-300 font-medium">{expectedCompletion}</span>
+                      </p>
                     </div>
                     <button
                       onClick={() => handleDelete(g.id)}
                       disabled={deletingId === g.id}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition disabled:opacity-50"
+                      className="p-1 text-neutral-600 hover:text-red-400 rounded transition-colors disabled:opacity-30 cursor-pointer"
                       title="Delete Goal"
                     >
                       {deletingId === g.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
                       ) : (
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       )}
                     </button>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-emerald-400">Saved: ₹{saved.toLocaleString()}</span>
-                      <span className="text-slate-400">Target: ₹{target.toLocaleString()}</span>
+                  <div className="space-y-1 bg-neutral-900/60 p-2.5 rounded-lg border border-neutral-900">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-neutral-400">Target:</span>
+                      <span className="font-semibold text-white">₹{target.toLocaleString()}</span>
                     </div>
-                    <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
-                      <div
-                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                        style={{ width: `${percent}%` }}
-                      ></div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-neutral-400">Saved:</span>
+                      <span className="font-semibold text-emerald-400">₹{saved.toLocaleString()}</span>
                     </div>
+                    <div className="flex justify-between text-xs pt-1 border-t border-neutral-800/60">
+                      <span className="text-neutral-400">Progress:</span>
+                      <span className="font-bold text-purple-400">{percent}%</span>
+                    </div>
+                  </div>
+
+                  <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${percent}%` }}
+                    ></div>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">
+                <div className="pt-2 border-t border-neutral-900 flex items-center justify-between">
+                  <span className="text-[11px] text-neutral-500">
                     {isCompleted ? (
-                      <span className="text-emerald-400 font-semibold">100% Reached</span>
+                      <span className="text-emerald-400 font-medium">Goal Achieved!</span>
                     ) : (
-                      <>Remaining: <strong className="text-slate-200">₹{remaining.toLocaleString()}</strong></>
+                      <>Remaining: <strong className="text-neutral-300">₹{(target - saved).toLocaleString()}</strong></>
                     )}
                   </span>
                   <button
@@ -273,9 +285,9 @@ export default function Goals() {
                       setDepositGoal(g);
                       setDepositAmount('');
                     }}
-                    className="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition"
+                    className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-400 text-black px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer"
                   >
-                    <PlusCircle className="w-3.5 h-3.5" />
+                    <PlusCircle className="w-3 h-3" />
                     Add Savings
                   </button>
                 </div>
@@ -287,89 +299,86 @@ export default function Goals() {
 
       {/* Add Goal Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-emerald-400" />
-                Create New Goal
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-white">Create Financial Goal</h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-800 transition"
+                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateGoal} className="space-y-4">
+            <form onSubmit={handleCreateGoal} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Goal Name *</label>
+                <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Goal Name *</label>
                 <input
                   type="text"
                   required
                   name="goal_name"
-                  placeholder="e.g. Emergency Fund, New Laptop, Japan Trip"
+                  placeholder="e.g. MacBook Purchase"
                   value={formData.goal_name}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Target Amount (₹) *</label>
+                <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Target Amount (₹) *</label>
                 <input
                   type="number"
                   step="1"
                   min="1"
                   required
                   name="target_amount"
-                  placeholder="e.g. 50000"
+                  placeholder="100000"
                   value={formData.target_amount}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Already Saved (₹)</label>
+                <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Already Saved (₹)</label>
                 <input
                   type="number"
                   step="1"
                   min="0"
                   name="saved_amount"
-                  placeholder="0"
+                  placeholder="45000"
                   value={formData.saved_amount}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Target Deadline</label>
+                <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Target Completion Date</label>
                 <input
                   type="date"
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-800">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition"
+                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-slate-950 font-semibold px-5 py-2 rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
                 >
-                  {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {submitting ? 'Creating...' : 'Create Goal'}
                 </button>
               </div>
@@ -378,58 +387,55 @@ export default function Goals() {
         </div>
       )}
 
-      {/* Add Savings / Deposit Modal */}
+      {/* Add Savings Modal */}
       {depositGoal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <PiggyBank className="w-5 h-5 text-emerald-400" />
-                Add Savings to "{depositGoal.goal_name}"
-              </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-white">Add Savings to "{depositGoal.goal_name}"</h3>
               <button
                 onClick={() => setDepositGoal(null)}
-                className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-800 transition"
+                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleDepositSubmit} className="space-y-4">
+            <form onSubmit={handleDepositSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Contribution Amount (₹) *</label>
+                <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Amount (₹) *</label>
                 <input
                   type="number"
                   step="1"
                   min="1"
                   required
-                  placeholder="e.g. 2000"
+                  placeholder="5000"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
                   autoFocus
                 />
               </div>
 
-              <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800 text-xs text-slate-400 flex justify-between">
-                <span>Current Saved: <strong>₹{Number(depositGoal.saved_amount || 0).toLocaleString()}</strong></span>
-                <span>New Total: <strong>₹{(Number(depositGoal.saved_amount || 0) + Number(depositAmount || 0)).toLocaleString()}</strong></span>
+              <div className="p-2.5 bg-neutral-900 rounded-lg text-xs text-neutral-400 flex justify-between">
+                <span>Current Saved: <strong className="text-neutral-200">₹{Number(depositGoal.saved_amount || 0).toLocaleString()}</strong></span>
+                <span>New Total: <strong className="text-emerald-400">₹{(Number(depositGoal.saved_amount || 0) + Number(depositAmount || 0)).toLocaleString()}</strong></span>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-800">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
                 <button
                   type="button"
                   onClick={() => setDepositGoal(null)}
-                  className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition"
+                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updatingGoal}
-                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-slate-950 font-semibold px-5 py-2 rounded-xl transition shadow-lg shadow-emerald-500/10 cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
                 >
-                  {updatingGoal && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {updatingGoal && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {updatingGoal ? 'Saving...' : 'Add to Goal'}
                 </button>
               </div>
