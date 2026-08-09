@@ -18,10 +18,17 @@ API.interceptors.request.use(async (config) => {
 // Finance Endpoints
 export const getTransactions = () => API.get('/transactions');
 export const createTransaction = (payload) => API.post('/transactions', payload);
+export const deleteTransaction = (id) => API.delete(`/transactions/${id}`);
+
 export const getBudgets = () => API.get('/budgets');
 export const createBudget = (payload) => API.post('/budgets', payload);
+export const deleteBudget = (id) => API.delete(`/budgets/${id}`);
+
 export const getGoals = () => API.get('/goals');
 export const createGoal = (payload) => API.post('/goals', payload);
+export const updateGoal = (id, payload) => API.patch(`/goals/${id}`, payload);
+export const deleteGoal = (id) => API.delete(`/goals/${id}`);
+
 
 // AI Chat Endpoint
 export const chatWithAgent = async (message, history = []) => {

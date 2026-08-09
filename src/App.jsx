@@ -5,12 +5,12 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
+import Budgets from './pages/Budgets';
+import Goals from './pages/Goals';
 
-// Temporary Placeholders for remaining Phase 3 pages
-const Transactions = () => <h2 className="text-2xl font-bold text-white">Transactions Management</h2>;
-const Budgets = () => <h2 className="text-2xl font-bold text-white">Budget Tracking</h2>;
-const Goals = () => <h2 className="text-2xl font-bold text-white">Financial Goals</h2>;
 const Documents = () => <h2 className="text-2xl font-bold text-white">Documents & Receipts</h2>;
+
 
 function App() {
   return (
