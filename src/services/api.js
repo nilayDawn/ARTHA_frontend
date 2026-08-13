@@ -55,4 +55,7 @@ export const deleteDocument = (id) => API.delete(`/documents/${id}`);
 
 export const getTelegramLinkCode = () => API.post('/telegram/link-code');
 
+// Email Report Endpoint
+export const sendReportEmail = () => API.post('/reports/send-email');
+
 export default API;

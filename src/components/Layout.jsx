@@ -5,7 +5,6 @@ import {
   Receipt,
   PieChart,
   Target,
-  Bot,
   Upload,
   LogOut,
   MessageSquare,
@@ -13,9 +12,14 @@ import {
   Menu,
   X,
   Sparkles,
-  Calendar
+  Calendar,
+  Mail,
+  Loader2,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { sendReportEmail } from '../services/api';
 import ChatDrawer from './ChatDrawer';
 import DocumentUploadModal from './DocumentUploadModal';
 import TelegramModal from './TelegramModel';
@@ -29,6 +33,32 @@ export default function Layout() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [telegramOpen, setTelegramOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [sendingReport, setSendingReport] = useState(false);
+  const [reportNotification, setReportNotification] = useState(null);
+
+  const handleSendReport = async () => {
+    try {
+      setSendingReport(true);
+      setReportNotification(null);
+      const res = await sendReportEmail();
+      setReportNotification({
+        type: 'success',
+        text: res.data?.message || `Report is being generated and sent to ${user?.email || 'your email'}.`
+      });
+    } catch (err) {
+      console.error('Failed to send report email:', err);
+      setReportNotification({
+        type: 'error',
+        text: err.response?.data?.detail || 'Failed to send email report. Please try again.'
+      });
+    } finally {
+      setSendingReport(false);
+      setTimeout(() => {
+        setReportNotification(null);
+      }, 5000);
+    }
+  };
 
   const navigation = [
     { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
@@ -80,6 +110,19 @@ export default function Layout() {
         </div>
 
         <div className="space-y-2 pt-4 border-t border-neutral-900">
+          <button
+            onClick={handleSendReport}
+            disabled={sendingReport}
+            className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-amber-400 border border-neutral-800 py-2 px-3 rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50"
+          >
+            {sendingReport ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Mail className="w-3.5 h-3.5" />
+            )}
+            {sendingReport ? 'Sending Report...' : 'Send Report'}
+          </button>
+
           <button
             onClick={() => setTelegramOpen(true)}
             className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-sky-400 border border-neutral-800 py-2 px-3 rounded-lg text-xs font-medium transition cursor-pointer"
@@ -160,9 +203,25 @@ export default function Layout() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
+                  handleSendReport();
+                }}
+                disabled={sendingReport}
+                className="w-full flex items-center justify-center gap-2 bg-neutral-900 text-amber-400 border border-neutral-800 py-2.5 px-3 rounded-lg text-xs font-medium disabled:opacity-50 cursor-pointer"
+              >
+                {sendingReport ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Mail className="w-4 h-4" />
+                )}
+                {sendingReport ? 'Sending Report...' : 'Send Report'}
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
                   setTelegramOpen(true);
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-neutral-900 text-sky-400 border border-neutral-800 py-2.5 px-3 rounded-lg text-xs font-medium"
+                className="w-full flex items-center justify-center gap-2 bg-neutral-900 text-sky-400 border border-neutral-800 py-2.5 px-3 rounded-lg text-xs font-medium cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" />
                 Telegram Agent
@@ -173,7 +232,7 @@ export default function Layout() {
                   setMobileMenuOpen(false);
                   setUploadOpen(true);
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-black py-2.5 px-3 rounded-lg text-xs font-semibold"
+                className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-black py-2.5 px-3 rounded-lg text-xs font-semibold cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
                 Upload Receipt
@@ -184,7 +243,7 @@ export default function Layout() {
                   setMobileMenuOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-500 hover:text-red-400"
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-neutral-500 hover:text-red-400 cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
@@ -254,6 +313,30 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Toast Notification for Email Report */}
+      {reportNotification && (
+        <div
+          className={`fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-medium shadow-2xl backdrop-blur-md transition-all ${
+            reportNotification.type === 'success'
+              ? 'bg-neutral-950/95 border-emerald-500/40 text-emerald-300 shadow-[0_0_25px_rgba(16,185,129,0.25)]'
+              : 'bg-neutral-950/95 border-red-500/40 text-red-300 shadow-[0_0_25px_rgba(239,68,68,0.25)]'
+          }`}
+        >
+          {reportNotification.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+          )}
+          <span>{reportNotification.text}</span>
+          <button
+            onClick={() => setReportNotification(null)}
+            className="ml-2 text-neutral-400 hover:text-white cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Modals & Drawers */}
       <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />

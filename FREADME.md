@@ -230,19 +230,21 @@ The `AuthProvider` component:
 | `chatWithAgent(message, history)` | POST | `/chat` | Send chat message + history to AI agent |
 | `uploadDocument(formData)` | POST | `/documents/upload` | Upload image for OCR extraction (multipart) |
 | `getTelegramLinkCode()` | POST | `/telegram/link-code` | Generate a `FP-XXXX` code to link the Telegram bot |
+| `sendReportEmail()`   | POST   | `/reports/send-email` | Trigger async generation and emailing of financial summary report |
 
 `uploadDocument` sets `Content-Type: multipart/form-data` and passes a `FormData` containing the file.
 `getTelegramLinkCode` is called by `TelegramModal` and returns `{ code, expires_in_seconds }`.
+`sendReportEmail` triggers the backend background task to assemble user transactions/budgets/goals into an HTML email report sent via Resend.
 
 ---
 
 ## Components
 
 ### `Layout.jsx` — Authenticated App Shell
-- **Sidebar** (w-64): Branded with `logo.png` inside a warm champagne gold (`#D6A84F`) circular container, navigation links (Overview, Transactions, Budgets, Goals, Documents), a **Connect Telegram** button, an **Upload Receipt** button, and a **Sign Out** button.
+- **Sidebar** (w-64): Branded with `logo.png` inside a warm champagne gold (`#D6A84F`) circular container, navigation links (Overview, Transactions, Budgets, Goals, Documents), a **Send Report** button, a **Connect Telegram** button, an **Upload Receipt** button, and a **Sign Out** button.
 - **Top Header Bar**: Featuring a luxury user profile capsule with initial avatar badge, active session pulse indicator (`emerald-400`), live date pill badge, and a glowing champagne gold **AI CFO Assistant** CTA button.
 - **Main content area**: renders nested routes via `<Outlet />`.
-- Manages local state for `chatOpen`, `uploadOpen`, and `telegramOpen` to toggle the drawer and modals.
+- Manages local state for `chatOpen`, `uploadOpen`, `telegramOpen`, and `sendingReport` to toggle drawers, modals, and report dispatch feedback with temporary toast notifications.
 
 ### `ChatDrawer.jsx` — AI CFO Assistant
 - Slide-in panel from the right (fixed overlay) for chatting with the **ARTHA AI CFO** agent.
@@ -344,7 +346,7 @@ Defined in `package.json`:
 ```
 [React UI]  ── Axios (Bearer JWT from Supabase session) ──▶  [FastAPI backend: /api/v1]
     ▲                                                             │
-    └──────────── JSON responses (transactions, budgets, goals, chat, OCR) ──┘
+    └──────────── JSON responses (transactions, budgets, goals, chat, OCR, email report) ──┘
 ```
 
 1. **Authentication**: User signs in via Supabase (client-side). The session's JWT is attached to every API request by the Axios interceptor.
@@ -352,6 +354,7 @@ Defined in `package.json`:
 3. **AI Chat**: `ChatDrawer` posts messages + history to `/chat`; the backend (LangGraph + Gemini 2.5) returns a response and optionally `memories_used`.
 4. **Documents**: `DocumentUploadModal` POSTs an image to `/documents/upload`; the backend runs OCR (Gemini 2.5 Flash) and returns extracted transaction data.
 5. **Telegram linking**: `TelegramModal` POSTs to `/telegram/link-code` to get an `FP-XXXX` code; the user then sends `/link <code>` to the FinPilot AI bot, and the backend maps their `telegram_chat_id` to their Supabase `user_id`. From then on, the bot accepts expense text, receipt photos, and PDF bank statements.
+6. **Email Summary Reports**: Clicking **Send Report** in the sidebar POSTs to `/reports/send-email`. The backend dispatches a background task fetching user financial records, generating an HTML report, and sending it via Resend.
 
 > The frontend must be pointed at a running backend via `VITE_BACKEND_API_URL`, and Supabase credentials must be configured for auth to function end-to-end.
 
@@ -359,10 +362,10 @@ Defined in `package.json`:
 
 ## Current Status & Known Limitations
 
-- ✅ **Implemented**: Auth (login/signup/logout), protected routing, app shell/layout, AI chat drawer, document upload modal, **Telegram connection modal**, and dashboard with summary cards + charts + recent transactions.
+- ✅ **Implemented**: Auth (login/signup/logout), protected routing, app shell/layout, AI chat drawer, document upload modal, **Telegram connection modal**, **Email summary report dispatch**, and dashboard with summary cards + charts + recent transactions.
 - ⏳ **Placeholders**: Transactions Management, Budget Tracking, Financial Goals, and Documents & Receipts pages render temporary headings and are not yet fully built.
 - ⚠️ **Hardcoded income**: The Dashboard uses a fixed `monthlyIncome` of `₹60,000` as a benchmark; it is not yet user-configurable.
-- ⚠️ **Environment required**: Supabase keys and backend URL must be configured for the app to function.
+- ⚠️ **Environment required**: Supabase keys, Resend API key, and backend URL must be configured for the app to function.
 - ⚠️ **Telegram bot URL**: The "Open Bot" deep link points to `t.me/FinPilotAIBot`; this must match the bot name registered with BotFather, and the backend webhook must be deployed and configured for production use.
 - 🧹 **Legacy CSS**: `src/App.css` contains unused Vite template styles.
 
