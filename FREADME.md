@@ -239,20 +239,16 @@ The `AuthProvider` component:
 ## Components
 
 ### `Layout.jsx` — Authenticated App Shell
-- **Sidebar** (w-64): brand/logo ("FinPilot AI"), navigation links (Overview, Transactions, Budgets, Goals), a **Connect Telegram** button, an **Upload Receipt** button, and a **Sign Out** button.
-- **Header**: shows logged-in user's email, a mobile **Telegram** button, and an **AI Assistant** button that opens the chat drawer.
+- **Sidebar** (w-64): Branded with `logo.png` inside a warm champagne gold (`#D6A84F`) circular container, navigation links (Overview, Transactions, Budgets, Goals, Documents), a **Connect Telegram** button, an **Upload Receipt** button, and a **Sign Out** button.
+- **Top Header Bar**: Featuring a luxury user profile capsule with initial avatar badge, active session pulse indicator (`emerald-400`), live date pill badge, and a glowing champagne gold **AI CFO Assistant** CTA button.
 - **Main content area**: renders nested routes via `<Outlet />`.
 - Manages local state for `chatOpen`, `uploadOpen`, and `telegramOpen` to toggle the drawer and modals.
-- Uses `lucide-react` icons and highlights the active nav item based on `location.pathname`.
 
-### `ChatDrawer.jsx` — AI Assistant
-- Slide-in panel from the right (fixed overlay) for chatting with the FinPilot AI agent.
-- Maintains a local `messages` array (initialized with a greeting from the assistant).
-- Reconstructs the conversation `history` in the format `{ role, content }` for the backend.
-- Calls `chatWithAgent(userMsg, history)` and appends the assistant's response, including `memories_used` (displayed as "Context recalled").
-- Shows a loading indicator while the agent is processing.
-- Auto-scrolls to the latest message.
-- Handles errors gracefully with a fallback message.
+### `ChatDrawer.jsx` — AI CFO Assistant
+- Slide-in panel from the right (fixed overlay) for chatting with the **ARTHA AI CFO** agent.
+- Features branded header with `#D6A84F` champagne gold title and `logo.png`.
+- Reconstructs conversation `history` for the backend LangGraph flow.
+- Calls `chatWithAgent(userMsg, history)` and handles security guardrail refusals or grounding memories (`memories_used`).
 
 ### `DocumentUploadModal.jsx` — Receipt / Statement Upload
 - Modal with a **drag-and-drop** zone plus a file picker.
