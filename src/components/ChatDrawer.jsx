@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Bot, User, Sparkles, Loader2 } from 'lucide-react';
 import { chatWithAgent } from '../services/api';
+import logo from '../assets/logo.png';
 
 export default function ChatDrawer({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
@@ -70,12 +71,16 @@ export default function ChatDrawer({ isOpen, onClose }) {
         <div className="w-screen max-w-md bg-neutral-950 border-l border-neutral-900 text-neutral-100 flex flex-col shadow-2xl">
           {/* Header */}
           <div className="p-4 border-b border-neutral-900 flex items-center justify-between bg-neutral-950/90 backdrop-blur">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
-                <Sparkles className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <div className="relative w-10 h-10 rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_10px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden shrink-0">
+                <img 
+                  src={logo} 
+                  alt="ARTHA Logo" 
+                  className="w-full h-full object-contain scale-[1.45]" 
+                />
               </div>
               <div>
-                <h3 className="font-semibold text-white text-sm">FinPilot AI CFO</h3>
+                <h3 className="font-semibold text-white text-sm"><span className="text-[#D6A84F]">ARTHA</span> AI CFO</h3>
                 <p className="text-[11px] text-neutral-500">Gemini 2.5 Flash • Financial Agent</p>
               </div>
             </div>

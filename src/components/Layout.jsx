@@ -12,12 +12,15 @@ import {
   FileText,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Calendar
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ChatDrawer from './ChatDrawer';
 import DocumentUploadModal from './DocumentUploadModal';
 import TelegramModal from './TelegramModel';
+
+import logo from '../assets/logo.png';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -40,13 +43,17 @@ export default function Layout() {
       {/* Laptop / Desktop Permanent Sidebar */}
       <aside className="w-64 bg-neutral-950 border-r border-neutral-900 flex-col justify-between p-4 hidden md:flex shrink-0">
         <div>
-          <div className="flex items-center gap-2.5 px-2 py-3 mb-6">
-            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
-              <Bot className="w-5 h-5" />
+          <div className="flex items-center gap-3.5 px-2 py-3 mb-6 border-b border-neutral-900/80 pb-4">
+            <div className="relative w-12 h-12 rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_15px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden shrink-0 transition-transform hover:scale-105">
+              <img 
+                src={logo} 
+                alt="ARTHA Logo" 
+                className="w-full h-full object-contain scale-[1.45]" 
+              />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-white block">FinPilot AI</span>
-              <span className="text-[10px] text-neutral-500 block">AI Financial Employee</span>
+              <span className="font-extrabold text-lg tracking-tight text-[#D6A84F] block leading-tight">ARTHA</span>
+              <span className="text-[10px] font-medium text-neutral-400 block mt-0.5">AI Financial Employee</span>
             </div>
           </div>
 
@@ -105,11 +112,18 @@ export default function Layout() {
           <div className="w-72 bg-neutral-950 border-r border-neutral-900 p-5 flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-neutral-900 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg">
-                    <Bot className="w-5 h-5" />
+                <div className="flex items-center gap-3">
+                  <div className="relative w-11 h-11 rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_12px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden shrink-0">
+                    <img 
+                      src={logo} 
+                      alt="ARTHA Logo" 
+                      className="w-full h-full object-contain scale-[1.45]" 
+                    />
                   </div>
-                  <span className="font-bold text-white text-base">FinPilot AI</span>
+                  <div>
+                    <span className="font-extrabold text-[#D6A84F] text-base block leading-tight">ARTHA</span>
+                    <span className="text-[10px] text-neutral-400 block mt-0.5">AI Financial Employee</span>
+                  </div>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
@@ -184,34 +198,53 @@ export default function Layout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="h-14 bg-neutral-950/90 border-b border-neutral-900 px-4 sm:px-6 flex items-center justify-between backdrop-blur-md sticky top-0 z-30">
+        <header className="h-16 bg-neutral-950/80 border-b border-neutral-900/80 px-4 sm:px-6 flex items-center justify-between backdrop-blur-xl sticky top-0 z-30 shadow-lg">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-1.5 text-neutral-400 hover:text-white rounded-lg bg-neutral-900 border border-neutral-800 md:hidden cursor-pointer"
+              className="p-2 text-neutral-400 hover:text-white rounded-xl bg-neutral-900/80 border border-neutral-800 md:hidden cursor-pointer transition-all hover:bg-neutral-800"
               title="Open Navigation Menu"
             >
               <Menu className="w-4 h-4" />
             </button>
-            <span className="text-xs text-neutral-400 truncate hidden sm:inline">
-              Welcome, <strong className="text-neutral-200 font-medium">{user?.email}</strong>
-            </span>
+
+            {/* Premium User Profile Capsule */}
+            <div className="flex items-center gap-2.5 bg-neutral-900/60 border border-neutral-800/80 rounded-full px-3 py-1.5 shadow-inner">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#D6A84F]/20 to-[#D6A84F]/40 border border-[#D6A84F]/60 text-[#D6A84F] font-bold text-[11px] flex items-center justify-center shrink-0 shadow-sm">
+                {user?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-300 font-medium truncate max-w-[140px] sm:max-w-[200px] md:max-w-[260px]">
+                  {user?.email}
+                </span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" title="Active Session"></span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Date Pill (Desktop) */}
+            <div className="hidden lg:flex items-center gap-2 bg-neutral-900/40 border border-neutral-900 rounded-full px-3.5 py-1.5 text-xs text-neutral-400 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-[#D6A84F]" />
+              <span>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+            </div>
+
+            {/* Mobile Telegram Agent Quick Access */}
             <button
               onClick={() => setTelegramOpen(true)}
-              className="md:hidden p-1.5 bg-neutral-900 text-sky-400 rounded-lg border border-neutral-800 text-xs flex items-center gap-1 cursor-pointer"
+              className="md:hidden p-2 bg-neutral-900 text-sky-400 rounded-xl border border-neutral-800 text-xs flex items-center gap-1 cursor-pointer hover:bg-neutral-800 transition"
+              title="Telegram Agent"
             >
-              <MessageSquare className="w-3.5 h-3.5" />
+              <MessageSquare className="w-4 h-4" />
             </button>
 
+            {/* Premium Gold AI CFO Assistant Button */}
             <button
               onClick={() => setChatOpen(true)}
-              className="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-500/20 transition-colors cursor-pointer"
+              className="flex items-center gap-2 bg-gradient-to-r from-[#D6A84F]/15 via-[#D6A84F]/25 to-[#D6A84F]/15 hover:from-[#D6A84F]/25 hover:to-[#D6A84F]/35 text-[#D6A84F] px-4 py-2 rounded-xl text-xs font-bold tracking-wide border border-[#D6A84F]/40 shadow-[0_0_15px_rgba(214,168,79,0.25)] hover:shadow-[0_0_22px_rgba(214,168,79,0.45)] transition-all cursor-pointer group active:scale-95"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <Sparkles className="w-4 h-4 text-[#D6A84F] group-hover:rotate-12 transition-transform duration-300" />
               <span>AI CFO Assistant</span>
             </button>
           </div>

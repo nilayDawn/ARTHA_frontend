@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { LogIn, Mail, Lock, AlertCircle, Bot } from 'lucide-react';
 
+import logo from '../assets/logo.png';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,10 +34,14 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-black px-4 antialiased">
       <div className="max-w-md w-full space-y-6 bg-neutral-950 p-6 sm:p-8 rounded-2xl border border-neutral-900 shadow-2xl">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-1">
-            <Bot className="w-6 h-6" />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_20px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden mb-2">
+            <img 
+              src={logo} 
+              alt="ARTHA Logo" 
+              className="w-full h-full object-contain scale-[1.45]" 
+            />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">FinPilot AI</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight"><span className="text-[#D6A84F]">ARTHA</span> AI</h2>
           <p className="text-xs text-neutral-500">
             Sign in to access your personal AI CFO dashboard
           </p>
