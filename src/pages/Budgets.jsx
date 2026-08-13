@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { getBudgets, createBudget, deleteBudget, getTransactions } from '../services/api';
+import { getCategorySpendingForMonth, getCurrentMonthStr } from '../utils/financeUtils';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -36,8 +37,6 @@ export default function Budgets() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-
-  const getCurrentMonthStr = () => new Date().toISOString().slice(0, 7);
 
   const [formData, setFormData] = useState({
     category: 'Food & Dining',
@@ -109,31 +108,9 @@ export default function Budgets() {
     }
   };
 
-  // Helper to compute category spending for a specific budget month (e.g. 2026-08)
-  const getCategorySpendingForMonth = (category, budgetMonth) => {
-    const targetMonth = budgetMonth || getCurrentMonthStr();
-    return transactions.reduce((acc, t) => {
-      if (!t.date || String(t.date).slice(0, 7) !== targetMonth) return acc;
-
-      let cat = t.category || 'Other';
-      const catLower = cat.toLowerCase();
-      const bCatLower = category.toLowerCase();
-
-      let isMatch = false;
-      if (bCatLower.includes('food') && (catLower.includes('food') || catLower.includes('dining') || catLower.includes('restaurant'))) {
-        isMatch = true;
-      } else if (bCatLower.includes('shop') && (catLower.includes('shop') || catLower.includes('store'))) {
-        isMatch = true;
-      } else if (bCatLower.includes('utilit') && (catLower.includes('utilit') || catLower.includes('bill'))) {
-        isMatch = true;
-      } else if (bCatLower.includes('transport') && (catLower.includes('transport') || catLower.includes('travel'))) {
-        isMatch = true;
-      } else if (catLower === bCatLower) {
-        isMatch = true;
-      }
-
-      return isMatch ? acc + Number(t.amount || 0) : acc;
-    }, 0);
+  // Helper to compute category spending using modular financeUtils
+  const getCategorySpending = (category, budgetMonth) => {
+    return getCategorySpendingForMonth(transactions, category, budgetMonth);
   };
 
   // Days remaining calculation
@@ -144,7 +121,7 @@ export default function Budgets() {
   // Overall metrics for current month
   const totalLimit = budgets.reduce((sum, b) => sum + Number(b.monthly_limit || 0), 0);
   const totalSpentInBudgets = budgets.reduce((sum, b) => {
-    const spent = getCategorySpendingForMonth(b.category, b.month);
+    const spent = getCategorySpending(b.category, b.month);
     return sum + spent;
   }, 0);
   const remainingTotal = totalLimit - totalSpentInBudgets;
@@ -152,7 +129,7 @@ export default function Budgets() {
 
   // AI Alerts Generator
   const aiAlerts = budgets.map((b) => {
-    const spent = getCategorySpendingForMonth(b.category, b.month);
+    const spent = getCategorySpending(b.category, b.month);
     const limit = Number(b.monthly_limit || 0);
     const percent = limit > 0 ? Math.round((spent / limit) * 100) : 0;
     return {
@@ -264,7 +241,7 @@ export default function Budgets() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {budgets.map((b) => {
-            const spent = getCategorySpendingForMonth(b.category, b.month);
+            const spent = getCategorySpending(b.category, b.month);
             const limit = Number(b.monthly_limit || 0);
             const percent = limit > 0 ? Math.round((spent / limit) * 100) : 0;
             const remaining = limit - spent;

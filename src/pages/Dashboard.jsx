@@ -40,9 +40,12 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setLoading(true);
+        const txParams = selectedMonth && selectedMonth !== 'ALL' ? { month: selectedMonth } : {};
+        const bgParams = selectedMonth && selectedMonth !== 'ALL' ? { month: selectedMonth } : {};
         const [txRes, bgRes] = await Promise.allSettled([
-          api.get('/transactions'),
-          api.get('/budgets'),
+          api.get('/transactions', { params: txParams }),
+          api.get('/budgets', { params: bgParams }),
         ]);
 
         if (txRes.status === 'fulfilled') setTransactions(txRes.value.data || []);
@@ -55,19 +58,12 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [selectedMonth]);
 
-  // Filter transactions for the selected month (or all if 'ALL')
-  const monthlyTransactions = useMemo(() => {
-    if (!selectedMonth || selectedMonth === 'ALL') return transactions;
-    return transactions.filter((t) => {
-      if (!t.date) return false;
-      const txMonth = String(t.date).slice(0, 7);
-      return txMonth === selectedMonth;
-    });
-  }, [transactions, selectedMonth]);
+  // Transactions for active month are directly supplied by backend DB fetch
+  const monthlyTransactions = transactions;
 
-  // Compute Financial Overview based on monthlyTransactions
+  // Compute Financial Overview based on backend-filtered transactions
   const incomeFromTx = monthlyTransactions
     .filter((t) => (t.category || '').toLowerCase() === 'income' || (t.type || '').toLowerCase() === 'income')
     .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
@@ -94,11 +90,8 @@ const Dashboard = () => {
     value: categoryMap[cat],
   }));
 
-  // Monthly Spending Trends Data (all-time trend across months)
-  const allExpenseTx = transactions.filter(
-    (t) => (t.category || '').toLowerCase() !== 'income' && (t.type || '').toLowerCase() !== 'income'
-  );
-  const monthlyTrendMap = allExpenseTx.reduce((acc, curr) => {
+  // Monthly Spending Trends Data (historical trend)
+  const monthlyTrendMap = expenseTx.reduce((acc, curr) => {
     if (!curr.date) return acc;
     const monthKey = new Date(curr.date).toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
     acc[monthKey] = (acc[monthKey] || 0) + Number(curr.amount || 0);
@@ -110,10 +103,8 @@ const Dashboard = () => {
     Spent: monthlyTrendMap[m],
   }));
 
-  // Budgets vs Actual Spending Data for selected month
-  const budgetVsSpendingData = budgets
-    .filter((b) => !selectedMonth || selectedMonth === 'ALL' || !b.month || b.month === selectedMonth)
-    .map((b) => {
+  // Budgets vs Actual Spending Data (budgets pre-filtered by backend DB query)
+  const budgetVsSpendingData = budgets.map((b) => {
       const spent = expenseTx
         .filter((t) => {
           const cat = (t.category || '').toLowerCase();

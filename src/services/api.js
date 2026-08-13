@@ -15,13 +15,20 @@ API.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Auth Endpoints (Backend API alternative to direct SDK)
+export const signUpUser = (payload) => API.post('/auth/signup', payload);
+export const loginUser = (payload) => API.post('/auth/login', payload);
+export const getUserProfile = () => API.get('/auth/me');
+export const logoutUser = () => API.post('/auth/logout');
+
 // Finance Endpoints
 export const getTransactions = (params) => API.get('/transactions', { params });
+export const getFinancialSummary = (params) => API.get('/summary', { params });
 export const createTransaction = (payload) => API.post('/transactions', payload);
 export const updateTransaction = (id, payload) => API.patch(`/transactions/${id}`, payload);
 export const deleteTransaction = (id) => API.delete(`/transactions/${id}`);
 
-export const getBudgets = () => API.get('/budgets');
+export const getBudgets = (params) => API.get('/budgets', { params });
 export const createBudget = (payload) => API.post('/budgets', payload);
 export const deleteBudget = (id) => API.delete(`/budgets/${id}`);
 

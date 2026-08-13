@@ -29,7 +29,7 @@ const CATEGORIES = [
 ];
 
 export default function Transactions() {
-  const [rawTransactions, setRawTransactions] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -56,7 +56,7 @@ export default function Transactions() {
     source: 'manual'
   });
 
-  // Fetch transactions from backend
+  // Fetch transactions from backend with DB-level filtering
   const fetchTransactions = useCallback(async (cat = selectedCategory, search = searchTerm, sDate = startDate, eDate = endDate) => {
     try {
       setLoading(true);
@@ -68,7 +68,7 @@ export default function Transactions() {
       if (eDate) params.end_date = eDate;
 
       const res = await getTransactions(params);
-      setRawTransactions(res.data || []);
+      setTransactions(res.data || []);
     } catch (err) {
       console.error('Error fetching transactions:', err);
       setError('Failed to load transactions from server.');
@@ -77,7 +77,7 @@ export default function Transactions() {
     }
   }, [selectedCategory, searchTerm, startDate, endDate]);
 
-  // Debounced fetch
+  // Debounced fetch on filter/search change
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchTransactions(selectedCategory, searchTerm, startDate, endDate);
@@ -85,55 +85,6 @@ export default function Transactions() {
 
     return () => clearTimeout(timer);
   }, [selectedCategory, searchTerm, startDate, endDate, fetchTransactions]);
-
-  // Client-side filtering pass
-  const displayedTransactions = useMemo(() => {
-    return rawTransactions.filter((tx) => {
-      const cat = (tx.category || '').toLowerCase();
-      const searchTarget = searchTerm.toLowerCase().trim();
-
-      // 1. Category check
-      let matchesCat = selectedCategory === 'All';
-      if (!matchesCat) {
-        const selLower = selectedCategory.toLowerCase();
-        if (selLower.includes('food') || selLower.includes('dining')) {
-          matchesCat = cat.includes('food') || cat.includes('dining') || cat.includes('restaurant');
-        } else if (selLower.includes('shop')) {
-          matchesCat = cat.includes('shop') || cat.includes('store');
-        } else if (selLower.includes('utilit') || selLower.includes('bill')) {
-          matchesCat = cat.includes('utilit') || cat.includes('bill');
-        } else if (selLower.includes('transport') || selLower.includes('travel')) {
-          matchesCat = cat.includes('transport') || cat.includes('travel');
-        } else {
-          matchesCat = cat === selLower || cat.includes(selLower);
-        }
-      }
-
-      // 2. Search term check
-      let matchesSearch = true;
-      if (searchTarget) {
-        const merchant = (tx.merchant || '').toLowerCase();
-        const amount = String(tx.amount || '');
-        const source = (tx.source || '').toLowerCase();
-        matchesSearch =
-          merchant.includes(searchTarget) ||
-          cat.includes(searchTarget) ||
-          amount.includes(searchTarget) ||
-          source.includes(searchTarget);
-      }
-
-      // 3. Date range check
-      let matchesDate = true;
-      if (startDate && tx.date) {
-        matchesDate = matchesDate && tx.date >= startDate;
-      }
-      if (endDate && tx.date) {
-        matchesDate = matchesDate && tx.date <= endDate;
-      }
-
-      return matchesCat && matchesSearch && matchesDate;
-    });
-  }, [rawTransactions, selectedCategory, searchTerm, startDate, endDate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -179,7 +130,7 @@ export default function Transactions() {
     try {
       setUpdatingId(txId);
       await updateTransaction(txId, { category: newCategoryVal });
-      setRawTransactions((prev) =>
+      setTransactions((prev) =>
         prev.map((t) => (String(t.id) === String(txId) ? { ...t, category: newCategoryVal } : t))
       );
       setEditingCategoryTxId(null);
@@ -196,7 +147,7 @@ export default function Transactions() {
     try {
       setDeletingId(id);
       await deleteTransaction(id);
-      setRawTransactions((prev) => prev.filter((t) => String(t.id) !== String(id)));
+      setTransactions((prev) => prev.filter((t) => String(t.id) !== String(id)));
     } catch (err) {
       console.error('Failed to delete transaction:', err);
       alert(err.response?.data?.detail || 'Failed to delete transaction.');
@@ -205,12 +156,12 @@ export default function Transactions() {
     }
   };
 
-  // Metrics calculation
-  const totalExpenses = displayedTransactions
+  // Metrics calculation based on backend-filtered dataset
+  const totalExpenses = transactions
     .filter((t) => (t.category || '').toLowerCase() !== 'income' && (t.type || '').toLowerCase() !== 'income')
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-  const totalIncome = displayedTransactions
+  const totalIncome = transactions
     .filter((t) => (t.category || '').toLowerCase() === 'income' || (t.type || '').toLowerCase() === 'income')
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
@@ -238,7 +189,7 @@ export default function Transactions() {
             <span>Records</span>
             <Receipt className="w-3.5 h-3.5 text-emerald-500/50" />
           </div>
-          <div className="text-lg font-semibold text-white">{displayedTransactions.length}</div>
+          <div className="text-lg font-semibold text-white">{transactions.length}</div>
         </div>
 
         <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
@@ -319,7 +270,7 @@ export default function Transactions() {
             <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
             <span className="text-xs">Loading records...</span>
           </div>
-        ) : displayedTransactions.length === 0 ? (
+        ) : transactions.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <Receipt className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
             <p className="text-neutral-500 text-[13px]">No matching transactions found</p>
@@ -339,7 +290,7 @@ export default function Transactions() {
                 </tr>
               </thead>
               <tbody>
-                {displayedTransactions.map((tx) => {
+                {transactions.map((tx) => {
                   const isIncome = (tx.category || '').toLowerCase() === 'income' || (tx.type || '').toLowerCase() === 'income';
 
                   return (
