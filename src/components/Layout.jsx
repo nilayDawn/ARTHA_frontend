@@ -23,8 +23,7 @@ import { sendReportEmail } from '../services/api';
 import ChatDrawer from './ChatDrawer';
 import DocumentUploadModal from './DocumentUploadModal';
 import TelegramModal from './TelegramModel';
-
-import logo from '../assets/logo.png';
+import ArthaLogo from './ArthaLogo';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -73,18 +72,10 @@ export default function Layout() {
       {/* Laptop / Desktop Permanent Sidebar */}
       <aside className="w-64 bg-neutral-950 border-r border-neutral-900 flex-col justify-between p-4 hidden md:flex shrink-0">
         <div>
-          <div className="flex items-center gap-3.5 px-2 py-3 mb-6 border-b border-neutral-900/80 pb-4">
-            <div className="relative w-12 h-12 rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_15px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden shrink-0 transition-transform hover:scale-105">
-              <img 
-                src={logo} 
-                alt="ARTHA Logo" 
-                className="w-full h-full object-contain scale-[1.45]" 
-              />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg tracking-tight text-[#D6A84F] block leading-tight">ARTHA</span>
-              <span className="text-[10px] font-medium text-neutral-400 block mt-0.5">AI Financial Employee</span>
-            </div>
+          <div className="px-2 py-3 mb-6 border-b border-neutral-900/80 pb-4">
+            <Link to="/" className="inline-block">
+              <ArthaLogo size="md" showText={true} tagline={true} />
+            </Link>
           </div>
 
           <nav className="space-y-1">
@@ -155,19 +146,9 @@ export default function Layout() {
           <div className="w-72 bg-neutral-950 border-r border-neutral-900 p-5 flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-neutral-900 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-11 h-11 rounded-full border-2 border-[#D6A84F]/80 bg-neutral-900 shadow-[0_0_12px_rgba(214,168,79,0.35)] flex items-center justify-center overflow-hidden shrink-0">
-                    <img 
-                      src={logo} 
-                      alt="ARTHA Logo" 
-                      className="w-full h-full object-contain scale-[1.45]" 
-                    />
-                  </div>
-                  <div>
-                    <span className="font-extrabold text-[#D6A84F] text-base block leading-tight">ARTHA</span>
-                    <span className="text-[10px] text-neutral-400 block mt-0.5">AI Financial Employee</span>
-                  </div>
-                </div>
+                <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                  <ArthaLogo size="sm" showText={true} tagline={true} />
+                </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-1.5 text-neutral-400 hover:text-white rounded-lg bg-neutral-900 cursor-pointer"
