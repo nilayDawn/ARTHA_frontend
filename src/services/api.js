@@ -53,7 +53,7 @@ export const uploadDocument = async (formData) => {
 export const getDocuments = () => API.get('/documents');
 export const deleteDocument = (id) => API.delete(`/documents/${id}`);
 
-export const getTelegramLinkCode = () => API.post('/telegram/link-code');
+export const getTelegramLinkCode = (refresh = false) => API.post('/telegram/link-code', null, { params: { refresh } });
 
 // Email Report Endpoint
 export const sendReportEmail = () => API.post('/reports/send-email');

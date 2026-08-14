@@ -215,7 +215,7 @@ export default function Landing() {
               <span>Rooted in Sanskrit Heritage</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F2F2F2] tracking-tight">
-              The Sanskrit Concept of <span className="text-[#D6A84F]">Artha (अर्थ)</span>
+              The Ideology of <span className="text-[#D6A84F]">Artha (अर्थ)</span>
             </h2>
             <p className="mt-4 text-sm sm:text-base text-[#8A8F8D] leading-relaxed">
               In classical philosophy, <strong className="text-[#F2F2F2]">Artha</strong> signifies the noble pursuit of wealth, material well-being, and financial purpose — essential pillars for a balanced, purposeful life.

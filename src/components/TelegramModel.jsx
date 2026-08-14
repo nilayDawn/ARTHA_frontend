@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Copy, Check, ExternalLink, X, Loader2 } from 'lucide-react';
+import { MessageSquare, Copy, Check, ExternalLink, X, Loader2, RefreshCw } from 'lucide-react';
 import { getTelegramLinkCode } from '../services/api';
 
 export default function TelegramModal({ isOpen, onClose }) {
@@ -8,14 +8,14 @@ export default function TelegramModal({ isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchLinkCode = async () => {
+  const fetchLinkCode = async (refresh = false) => {
     setLoading(true);
     setError('');
     try {
-      const res = await getTelegramLinkCode();
+      const res = await getTelegramLinkCode(refresh);
       setCode(res.data.code);
     } catch (err) {
-      setError('Failed to generate connection code. Please try again.');
+      setError('Failed to fetch connection code. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -23,7 +23,7 @@ export default function TelegramModal({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      fetchLinkCode();
+      fetchLinkCode(false);
     }
   }, [isOpen]);
 
@@ -59,18 +59,33 @@ export default function TelegramModal({ isOpen, onClose }) {
         {loading ? (
           <div className="py-8 text-center text-neutral-500 text-xs flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-sky-400" />
-            <span>Generating temporary link code...</span>
+            <span>Processing link code...</span>
           </div>
         ) : error ? (
-          <div className="py-4 text-center text-red-400 text-xs">{error}</div>
+          <div className="py-4 text-center text-red-400 text-xs space-y-2">
+            <p>{error}</p>
+            <button 
+              onClick={() => fetchLinkCode(true)}
+              className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 text-white rounded text-xs transition border border-neutral-800 cursor-pointer"
+            >
+              Try Again
+            </button>
+          </div>
         ) : (
           <div className="space-y-4">
-            <div className="bg-neutral-900 p-4 rounded-xl border border-neutral-800 text-center">
+            <div className="bg-neutral-900 p-4 rounded-xl border border-neutral-800 text-center relative group">
               <span className="text-[11px] uppercase tracking-wider text-neutral-500 font-medium block mb-1">
                 Your Link Code (Valid for 10 min)
               </span>
-              <div className="text-2xl font-mono font-bold text-sky-400 tracking-widest my-1">
-                {code}
+              <div className="text-2xl font-mono font-bold text-sky-400 tracking-widest my-1 flex items-center justify-center gap-2">
+                <span>{code}</span>
+                <button
+                  onClick={() => fetchLinkCode(true)}
+                  title="Regenerate new link code"
+                  className="p-1 text-neutral-500 hover:text-sky-400 transition rounded-lg hover:bg-neutral-800/80 cursor-pointer"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
