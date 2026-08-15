@@ -37,19 +37,34 @@ const Dashboard = () => {
   const currentMonthStr = new Date().toISOString().slice(0, 7);
   const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
 
+  const [availableMonths, setAvailableMonths] = useState([]);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         const txParams = selectedMonth && selectedMonth !== 'ALL' ? { month: selectedMonth } : {};
         const bgParams = selectedMonth && selectedMonth !== 'ALL' ? { month: selectedMonth } : {};
-        const [txRes, bgRes] = await Promise.allSettled([
+        const [txRes, bgRes, allTxRes] = await Promise.allSettled([
           api.get('/transactions', { params: txParams }),
           api.get('/budgets', { params: bgParams }),
+          api.get('/transactions'),
         ]);
 
         if (txRes.status === 'fulfilled') setTransactions(txRes.value.data || []);
         if (bgRes.status === 'fulfilled') setBudgets(bgRes.value.data || []);
+        
+        if (allTxRes.status === 'fulfilled') {
+          const allTx = allTxRes.value.data || [];
+          const months = Array.from(
+            new Set(
+              allTx
+                .map((t) => (t.date ? String(t.date).slice(0, 7) : null))
+                .filter(Boolean)
+            )
+          ).sort().reverse();
+          setAvailableMonths(months);
+        }
       } catch (err) {
         console.error('Error loading dashboard data:', err);
       } finally {
@@ -148,11 +163,33 @@ const Dashboard = () => {
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="bg-transparent text-xs text-white focus:outline-none cursor-pointer"
           >
-            <option value={currentMonthStr} className="bg-neutral-950 text-white">Current Month ({currentMonthStr})</option>
             <option value="ALL" className="bg-neutral-950 text-white">All-Time Cumulative</option>
+            <option value={currentMonthStr} className="bg-neutral-950 text-white">Current Month ({currentMonthStr})</option>
+            {availableMonths
+              .filter((m) => m !== currentMonthStr)
+              .map((m) => (
+                <option key={m} value={m} className="bg-neutral-950 text-white">
+                  Statement Period ({m})
+                </option>
+              ))}
           </select>
         </div>
       </div>
+
+      {/* Info banner if active selected month has 0 transactions but user has transactions in other months */}
+      {monthlyTransactions.length === 0 && availableMonths.length > 0 && selectedMonth !== 'ALL' && (
+        <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-emerald-300">
+          <span>
+            💡 <strong>Notice:</strong> No transactions logged for <strong>{selectedMonth}</strong>. Your uploaded bank statement transactions are in <strong>{availableMonths.join(', ')}</strong>.
+          </span>
+          <button
+            onClick={() => setSelectedMonth('ALL')}
+            className="px-3 py-1 bg-emerald-500 text-black font-semibold rounded-md hover:bg-emerald-400 transition-all text-xs self-start sm:self-auto shrink-0"
+          >
+            View All-Time Data
+          </button>
+        </div>
+      )}
 
       {/* 1. Summary Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">

@@ -83,7 +83,7 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
               </div>
               <div>
                 <h3 className="font-semibold text-white text-sm"><span className="text-[#D6A84F]">ARTHA</span> AI CFO</h3>
-                <p className="text-[11px] text-neutral-500">Gemini 2.5 Flash • Financial Agent</p>
+                <p className="text-[11px] text-neutral-500">Financial Agent</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

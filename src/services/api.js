@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { supabase } from '../lib/supabase';
 
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1';
+  const cleanUrl = envUrl.replace(/\/+$/, '');
+  return cleanUrl.endsWith('/api/v1') ? cleanUrl : `${cleanUrl}/api/v1`;
+};
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: getBaseURL(),
 });
 
 // Interceptor to attach JWT token and custom LLM API key to every outgoing request

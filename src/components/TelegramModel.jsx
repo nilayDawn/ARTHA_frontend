@@ -90,7 +90,7 @@ export default function TelegramModal({ isOpen, onClose }) {
             </div>
 
             <ol className="text-xs text-neutral-400 space-y-1.5 list-decimal list-inside bg-neutral-900/60 p-3 rounded-lg leading-relaxed border border-neutral-800">
-              <li>Open Telegram and start your FinPilot AI Bot.</li>
+              <li>Open Telegram and start your ARTHA AI Bot (<strong>@NilFinanceBot</strong>).</li>
               <li>Send the command: <code className="bg-neutral-950 px-1.5 py-0.5 rounded text-sky-400 font-mono">/link {code}</code></li>
             </ol>
 
@@ -104,7 +104,7 @@ export default function TelegramModal({ isOpen, onClose }) {
               </button>
               
               <a
-                href={`https://t.me/FinPilotAIBot?start=${code}`}
+                href={`https://t.me/${import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'NilFinanceBot'}?start=${code}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex-1 bg-sky-500 hover:bg-sky-400 text-black font-semibold py-2 px-3 rounded-lg text-xs transition flex items-center justify-center gap-1.5"
