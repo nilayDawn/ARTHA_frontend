@@ -129,6 +129,7 @@ Vite explicitly ignores environment variables that do not start with `VITE_` to 
 | `VITE_BACKEND_API_URL` | `https://artha-api-live-f3cke3azcmd2d4fw.centralindia-01.azurewebsites.net` | Target endpoint for all REST operations (Chat agent, document processing, budget CRUD, report triggers). |
 | `VITE_SUPABASE_URL` | `https://your-supabase-id.supabase.co` | Supabase endpoint for JWT verification, session persistence, and profile metadata. |
 | `VITE_SUPABASE_ANON_KEY` | `eyJhbGciOi...` | Public client token used by `@supabase/supabase-js` for browser-scoped database requests. |
+| `VITE_TELEGRAM_BOT_USERNAME` | `NilFinanceBot` | Username of your Telegram Bot (e.g. `@NilFinanceBot`) for dynamic Telegram connection deep-linking. |
 
 ---
 

@@ -102,6 +102,7 @@ The frontend communicates with the FastAPI backend (`http://localhost:8000/api/v
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your-anon-key
    VITE_BACKEND_API_URL=http://localhost:8000/api/v1
+   VITE_TELEGRAM_BOT_USERNAME=NilFinanceBot
    ```
 
 3. **Run Local Dev Server**:
