@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Mail, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
@@ -10,6 +10,23 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Detect URL hash or query errors from Supabase OAuth redirects
+    const hash = window.location.hash;
+    const search = window.location.search;
+    const params = new URLSearchParams(hash.startsWith('#') ? hash.substring(1) : search);
+    const errorDesc = params.get('error_description');
+
+    if (errorDesc) {
+      const decoded = decodeURIComponent(errorDesc).replace(/\+/g, ' ');
+      if (decoded.toLowerCase().includes('already registered') || decoded.toLowerCase().includes('another provider')) {
+        setError('An account with this email address was created using Email & Password. Please log in with your email and password.');
+      } else {
+        setError(decoded);
+      }
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
