@@ -31,9 +31,9 @@ jobs:
           api_location: ""
           output_location: "dist"
         env:
-          VITE_SUPABASE_URL: "https://your-project-id.supabase.co"
-          VITE_SUPABASE_ANON_KEY: "your-actual-supabase-anon-key"
-          VITE_BACKEND_API_URL: "https://artha-api-live-f3cke3azcmd2d4fw.centralindia-01.azurewebsites.net"
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_BACKEND_API_URL: ${{ secrets.VITE_BACKEND_API_URL }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
