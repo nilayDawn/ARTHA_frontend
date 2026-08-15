@@ -10,7 +10,8 @@
 The **ARTHA AI** frontend is a modern web application designed for personal financial management, featuring an AI CFO assistant drawer, automated receipt OCR scanning, interactive visual analytics, and Telegram bot account linking.
 
 ### Key Highlights:
-- **Luxury Minimalist Design**: Dark slate mode (`#0f172a`), emerald accents, and champagne gold (`#D6A84F`) branding elements.
+- **Luxury Minimalist Design**: Dark slate mode (`#0f172a`), emerald accents, and champagne gold (`#D6A84F`) branding elements. Display logged-in user full name (`user_metadata.full_name`).
+- **Custom LLM API Key Management**: `ApiKeyModal` UI component allowing users to set, test, and manage custom Google Gemini API keys stored in `localStorage` with automated `X-User-LLM-Key` request header injection.
 - **AI CFO Assistant Drawer**: Integrated LangGraph conversational interface with grounding memory pills and structured database action parsing.
 - **Visual Analytics**: Interactive donut charts for spending categories and side-by-side grouped bar charts for budget limits vs. actual spent via **Recharts**.
 - **Automated Receipt & Document OCR Upload**: File dropzone supporting receipt scanning via Gemini 3.6 Flash Vision.
@@ -30,7 +31,7 @@ The **ARTHA AI** frontend is a modern web application designed for personal fina
 | **State & Auth** | Supabase Auth + React Context | Session management & JWT bearer token injection |
 | **Icons** | [lucide-react](https://lucide.dev) | Modern vector icons |
 | **Charts** | [Recharts](https://recharts.org) | Responsive data visualization |
-| **HTTP Client** | [Axios](https://axios-http.com) | API requests with automated auth bearer interceptors |
+| **HTTP Client** | [Axios](https://axios-http.com) | API requests with automated auth bearer & custom LLM key header interceptors |
 
 ---
 
@@ -49,8 +50,9 @@ frontend/
     ├── index.css              # Global styles, Tailwind v4 directives & theme tokens
     ├── assets/                # ARTHA brand logo assets
     ├── components/            # UI Components
-    │   ├── Layout.jsx             # Shell sidebar, header, navigation & modals toggle
+    │   ├── Layout.jsx             # Shell sidebar, header, user profile capsule & modals toggle
     │   ├── ChatDrawer.jsx         # AI CFO Assistant slide-in drawer
+    │   ├── ApiKeyModal.jsx        # Custom LLM Gemini API Key modal
     │   ├── DocumentUploadModal.jsx# Receipt & invoice dropzone upload modal
     │   ├── TelegramModel.jsx      # Telegram bot connection modal
     │   └── ProtectedRoute.jsx     # Auth session wrapper
@@ -63,7 +65,7 @@ frontend/
     │   ├── Login.jsx              # User sign-in page
     │   └── Signup.jsx             # User registration page
     └── services/
-        └── api.js                 # Axios instance with Bearer JWT interceptors
+        └── api.js                 # Axios instance with Bearer JWT & X-User-LLM-Key interceptors
 ```
 
 ---
@@ -80,7 +82,8 @@ The frontend communicates with the FastAPI backend (`http://localhost:8000/api/v
 | `createBudget()` | `POST` | `/budgets` | Set budget & invalidate cache |
 | `getGoals()` | `GET` | `/goals` | Fetch savings goals |
 | `createGoal()` | `POST` | `/goals` | Create goal & invalidate cache |
-| `chatWithAgent()` | `POST` | `/chat` | Send message + history to ARTHA AI agent |
+| `chatWithAgent()` | `POST` | `/chat` | Send message + history + custom API key to ARTHA AI agent |
+| `validateApiKey()` | `POST` | `/chat/validate-key` | Perform live ping test for custom Gemini API Key |
 | `uploadDocument()` | `POST` | `/documents/upload` | Upload receipt image for OCR processing |
 | `getTelegramLinkCode()` | `POST` | `/telegram/link-code` | Fetch encrypted `FP-XXXX` Telegram link token |
 | `sendReportEmail()` | `POST` | `/reports/send-email` | Dispatch email summary report via Resend |

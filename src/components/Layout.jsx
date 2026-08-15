@@ -16,13 +16,15 @@ import {
   Mail,
   Loader2,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Key
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { sendReportEmail } from '../services/api';
 import ChatDrawer from './ChatDrawer';
 import DocumentUploadModal from './DocumentUploadModal';
 import TelegramModal from './TelegramModel';
+import ApiKeyModal from './ApiKeyModal';
 import ArthaLogo from './ArthaLogo';
 
 export default function Layout() {
@@ -31,6 +33,7 @@ export default function Layout() {
   const [chatOpen, setChatOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [telegramOpen, setTelegramOpen] = useState(false);
+  const [apiKeyOpen, setApiKeyOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [sendingReport, setSendingReport] = useState(false);
@@ -101,6 +104,14 @@ export default function Layout() {
         </div>
 
         <div className="space-y-2 pt-4 border-t border-neutral-900">
+          <button
+            onClick={() => setApiKeyOpen(true)}
+            className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-[#D6A84F] border border-neutral-800 py-2 px-3 rounded-lg text-xs font-medium transition cursor-pointer"
+          >
+            <Key className="w-3.5 h-3.5" />
+            LLM API Key
+          </button>
+
           <button
             onClick={handleSendReport}
             disabled={sendingReport}
@@ -184,6 +195,17 @@ export default function Layout() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
+                  setApiKeyOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-neutral-900 text-[#D6A84F] border border-neutral-800 py-2.5 px-3 rounded-lg text-xs font-medium cursor-pointer"
+              >
+                <Key className="w-4 h-4" />
+                LLM API Key
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
                   handleSendReport();
                 }}
                 disabled={sendingReport}
@@ -250,17 +272,23 @@ export default function Layout() {
             </button>
 
             {/* Premium User Profile Capsule */}
-            <div className="flex items-center gap-2.5 bg-neutral-900/60 border border-neutral-800/80 rounded-full px-3 py-1.5 shadow-inner">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#D6A84F]/20 to-[#D6A84F]/40 border border-[#D6A84F]/60 text-[#D6A84F] font-bold text-[11px] flex items-center justify-center shrink-0 shadow-sm">
-                {user?.email?.[0]?.toUpperCase() || 'U'}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-300 font-medium truncate max-w-[140px] sm:max-w-[200px] md:max-w-[260px]">
-                  {user?.email}
-                </span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" title="Active Session"></span>
-              </div>
-            </div>
+            {(() => {
+              const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || (user?.email ? user.email.split('@')[0] : 'User');
+              const initial = userName ? userName[0].toUpperCase() : 'U';
+              return (
+                <div className="flex items-center gap-2.5 bg-neutral-900/60 border border-neutral-800/80 rounded-full px-3 py-1.5 shadow-inner">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#D6A84F]/20 to-[#D6A84F]/40 border border-[#D6A84F]/60 text-[#D6A84F] font-bold text-[11px] flex items-center justify-center shrink-0 shadow-sm">
+                    {initial}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-neutral-300 font-medium truncate max-w-[140px] sm:max-w-[200px] md:max-w-[260px]" title={user?.email}>
+                      {userName}
+                    </span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" title={`Active Session (${user?.email || 'Logged in'})`}></span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           <div className="flex items-center gap-3">
@@ -269,6 +297,16 @@ export default function Layout() {
               <Calendar className="w-3.5 h-3.5 text-[#D6A84F]" />
               <span>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
             </div>
+
+            {/* LLM API Key Quick Button in Header */}
+            <button
+              onClick={() => setApiKeyOpen(true)}
+              className="p-2 bg-neutral-900 hover:bg-neutral-800 text-[#D6A84F] rounded-xl border border-neutral-800 text-xs flex items-center gap-1.5 cursor-pointer transition"
+              title="LLM API Key Settings"
+            >
+              <Key className="w-4 h-4 text-[#D6A84F]" />
+              <span className="hidden sm:inline text-xs font-medium">API Key</span>
+            </button>
 
             {/* Mobile Telegram Agent Quick Access */}
             <button
@@ -320,9 +358,10 @@ export default function Layout() {
       )}
 
       {/* Modals & Drawers */}
-      <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+      <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} onOpenApiKeyModal={() => setApiKeyOpen(true)} />
       <DocumentUploadModal isOpen={uploadOpen} onClose={() => setUploadOpen(false)} />
       <TelegramModal isOpen={telegramOpen} onClose={() => setTelegramOpen(false)} />
+      <ApiKeyModal isOpen={apiKeyOpen} onClose={() => setApiKeyOpen(false)} />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, User, Sparkles, Loader2 } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles, Loader2, Key } from 'lucide-react';
 import { chatWithAgent } from '../services/api';
 import logo from '../assets/logo.png';
 
-export default function ChatDrawer({ isOpen, onClose }) {
+export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -12,6 +12,7 @@ export default function ChatDrawer({ isOpen, onClose }) {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hasCustomKey, setHasCustomKey] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -21,6 +22,7 @@ export default function ChatDrawer({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
+      setHasCustomKey(!!localStorage.getItem('user_gemini_api_key'));
     }
   }, [messages, isOpen]);
 
@@ -84,13 +86,31 @@ export default function ChatDrawer({ isOpen, onClose }) {
                 <p className="text-[11px] text-neutral-500">Gemini 2.5 Flash • Financial Agent</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900 transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onOpenApiKeyModal}
+                className={`p-1.5 rounded-lg border text-xs flex items-center gap-1 cursor-pointer transition ${
+                  hasCustomKey
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                    : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
+                }`}
+                title={hasCustomKey ? 'Custom API Key Active (Click to edit)' : 'Click to set custom LLM API Key'}
+              >
+                <Key className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-medium hidden sm:inline">
+                  {hasCustomKey ? 'Custom Key' : 'API Key'}
+                </span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="p-1 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
+
 
           {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">

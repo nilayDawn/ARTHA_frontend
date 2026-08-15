@@ -5,13 +5,19 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1',
 });
 
-// Interceptor to attach JWT token to every outgoing request
+// Interceptor to attach JWT token and custom LLM API key to every outgoing request
 API.interceptors.request.use(async (config) => {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  const customApiKey = localStorage.getItem('user_gemini_api_key');
+  if (customApiKey && customApiKey.trim()) {
+    config.headers['X-User-LLM-Key'] = customApiKey.trim();
+  }
+
   return config;
 });
 
@@ -37,9 +43,16 @@ export const createGoal = (payload) => API.post('/goals', payload);
 export const updateGoal = (id, payload) => API.patch(`/goals/${id}`, payload);
 export const deleteGoal = (id) => API.delete(`/goals/${id}`);
 
-// AI Chat Endpoint
-export const chatWithAgent = async (message, history = []) => {
-  const res = await API.post('/chat', { message, history });
+// AI Chat Endpoint & Key Validation
+export const validateApiKey = (apiKey) => API.post('/chat/validate-key', { api_key: apiKey });
+
+export const chatWithAgent = async (message, history = [], customApiKey = null) => {
+  const keyToUse = customApiKey || localStorage.getItem('user_gemini_api_key');
+  const payload = { message, history };
+  if (keyToUse && keyToUse.trim()) {
+    payload.custom_api_key = keyToUse.trim();
+  }
+  const res = await API.post('/chat', payload);
   return res.data;
 };
 
