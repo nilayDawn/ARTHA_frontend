@@ -68,7 +68,7 @@ const Dashboard = () => {
     .filter((t) => (t.category || '').toLowerCase() === 'income' || (t.type || '').toLowerCase() === 'income')
     .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
 
-  const monthlyIncome = incomeFromTx > 0 ? incomeFromTx : 60000;
+  const monthlyIncome = incomeFromTx;
 
   const expenseTx = monthlyTransactions.filter(
     (t) => (t.category || '').toLowerCase() !== 'income' && (t.type || '').toLowerCase() !== 'income'
