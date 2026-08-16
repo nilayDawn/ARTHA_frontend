@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { 
-  UploadCloud, 
-  FileText, 
-  Trash2, 
-  ExternalLink, 
-  Loader2, 
-  CheckCircle2, 
+import {
+  UploadCloud,
+  FileText,
+  Trash2,
+  ExternalLink,
+  Loader2,
+  CheckCircle2,
   Receipt,
   FileCheck,
   Sparkles
@@ -56,7 +56,7 @@ export default function Documents() {
       formData.append('file', file);
 
       const res = await uploadDocument(formData);
-      
+
       setUploadSuccess({
         message: res.message || 'File processed successfully!',
         extracted: res.extracted_data
@@ -109,7 +109,7 @@ export default function Documents() {
           disabled={uploading}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
         />
-        
+
         <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(0,217,165,0.15)]">
           {uploading ? (
             <Loader2 className="w-6 h-6 animate-spin" />

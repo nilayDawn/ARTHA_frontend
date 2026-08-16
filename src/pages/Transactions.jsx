@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  Receipt, 
-  ArrowDownRight, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  Receipt,
+  ArrowDownRight,
   ArrowUpRight,
   X,
   Loader2,
@@ -37,7 +37,7 @@ export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Search & Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -99,7 +99,7 @@ export default function Transactions() {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!formData.amount || Number(formData.amount) <= 0) return;
-    
+
     try {
       setSubmitting(true);
       await createTransaction({
@@ -299,7 +299,7 @@ export default function Transactions() {
                         {tx.date ? new Date(tx.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                       </td>
                       <td className="px-4 py-2.5 font-medium text-neutral-200">{tx.merchant || 'Unknown'}</td>
-                      
+
                       {/* Editable Category */}
                       <td className="px-4 py-2.5 text-neutral-400 text-xs">
                         {editingCategoryTxId === tx.id ? (
@@ -349,7 +349,7 @@ export default function Transactions() {
                       <td className={`px-4 py-2.5 text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-red-400'}`}>
                         {isIncome ? '+' : '-'}₹{Number(tx.amount || 0).toLocaleString()}
                       </td>
-                      
+
                       <td className="px-4 py-2.5 text-center flex items-center justify-center gap-1">
                         <button
                           onClick={() => handleDelete(tx.id)}

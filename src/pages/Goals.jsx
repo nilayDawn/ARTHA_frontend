@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { 
-  Target, 
-  Plus, 
-  Trash2, 
-  PiggyBank, 
-  Calendar, 
-  CheckCircle, 
-  TrendingUp, 
-  Loader2, 
+import {
+  Target,
+  Plus,
+  Trash2,
+  PiggyBank,
+  Calendar,
+  CheckCircle,
+  TrendingUp,
+  Loader2,
   X,
   PlusCircle
 } from 'lucide-react';
@@ -215,9 +215,8 @@ export default function Goals() {
             return (
               <div
                 key={g.id}
-                className={`artha-card ${
-                  isCompleted ? 'border-emerald-500/35 shadow-[0_8px_30px_rgba(0,217,165,0.08)]' : ''
-                } rounded-xl p-4 space-y-3 flex flex-col justify-between`}
+                className={`artha-card ${isCompleted ? 'border-emerald-500/35 shadow-[0_8px_30px_rgba(0,217,165,0.08)]' : ''
+                  } rounded-xl p-4 space-y-3 flex flex-col justify-between`}
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">

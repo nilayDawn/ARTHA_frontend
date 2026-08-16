@@ -55,7 +55,7 @@ const Dashboard = () => {
 
         if (txRes.status === 'fulfilled') setTransactions(txRes.value.data || []);
         if (bgRes.status === 'fulfilled') setBudgets(bgRes.value.data || []);
-        
+
         if (allTxRes.status === 'fulfilled') {
           const allTx = allTxRes.value.data || [];
           const months = Array.from(
@@ -136,21 +136,21 @@ const Dashboard = () => {
 
   // Budgets vs Actual Spending Data (budgets pre-filtered by backend DB query)
   const budgetVsSpendingData = budgets.map((b) => {
-      const spent = expenseTx
-        .filter((t) => {
-          const cat = (t.category || '').toLowerCase();
-          const bCat = (b.category || '').toLowerCase();
-          if (bCat.includes('food') && (cat.includes('food') || cat.includes('dining') || cat.includes('restaurant'))) return true;
-          return cat === bCat;
-        })
-        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+    const spent = expenseTx
+      .filter((t) => {
+        const cat = (t.category || '').toLowerCase();
+        const bCat = (b.category || '').toLowerCase();
+        if (bCat.includes('food') && (cat.includes('food') || cat.includes('dining') || cat.includes('restaurant'))) return true;
+        return cat === bCat;
+      })
+      .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
-      return {
-        category: b.category,
-        Limit: Number(b.monthly_limit || b.limit || 0),
-        Spent: spent,
-      };
-    });
+    return {
+      category: b.category,
+      Limit: Number(b.monthly_limit || b.limit || 0),
+      Spent: spent,
+    };
+  });
 
   if (loading) {
     return (
@@ -351,8 +351,8 @@ const Dashboard = () => {
               <AreaChart data={monthlyTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { 
-  PieChart, 
-  Plus, 
-  Trash2, 
-  AlertTriangle, 
-  TrendingUp, 
-  Wallet, 
-  CheckCircle2, 
-  Loader2, 
+import {
+  PieChart,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  TrendingUp,
+  Wallet,
+  CheckCircle2,
+  Loader2,
   X,
   Sparkles
 } from 'lucide-react';
@@ -218,9 +218,8 @@ export default function Budgets() {
           <div className="text-2xl font-bold text-purple-400 tracking-tight">{overallUtilization}%</div>
           <div className="w-full bg-neutral-900 h-1 rounded-full mt-1.5 overflow-hidden border border-white/[0.03]">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                overallUtilization > 100 ? 'bg-red-500' : overallUtilization > 80 ? 'bg-amber-500' : 'bg-emerald-500'
-              }`}
+              className={`h-full rounded-full transition-all duration-500 ${overallUtilization > 100 ? 'bg-red-500' : overallUtilization > 80 ? 'bg-amber-500' : 'bg-emerald-500'
+                }`}
               style={{ width: `${Math.min(100, Math.max(0, overallUtilization))}%` }}
             ></div>
           </div>
