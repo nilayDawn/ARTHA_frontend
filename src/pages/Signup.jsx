@@ -68,6 +68,10 @@ const Signup = () => {
         </>
       }
     >
+      <SEOHead
+        title="Create Account"
+        description="Register for an ARTHA AI account to automate expense tracking, budget planning, and financial decision-making."
+      />
       {/* Google OAuth Signup Button */}
       <GoogleAuthButton text="Sign up with Google" onError={(errText) => setError(errText)} />
 
