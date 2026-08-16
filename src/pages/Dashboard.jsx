@@ -25,6 +25,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import SEOHead from '../components/ui/SEOHead';
 
 const CATEGORY_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#64748b'];
 
@@ -147,6 +148,10 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
+      <SEOHead
+        title="Dashboard"
+        description="View real-time financial overview, monthly income, total expenses, savings rate, category breakdown, and recent transactions."
+      />
       {/* Header & Month Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>

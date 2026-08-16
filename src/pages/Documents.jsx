@@ -15,6 +15,7 @@ import PageHeader from '../components/ui/PageHeader';
 import ErrorAlert from '../components/ui/ErrorAlert';
 import LoadingState from '../components/ui/LoadingState';
 import EmptyState from '../components/ui/EmptyState';
+import SEOHead from '../components/ui/SEOHead';
 
 export default function Documents() {
   const [documents, setDocuments] = useState([]);
@@ -89,6 +90,10 @@ export default function Documents() {
 
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
+      <SEOHead
+        title="Documents & Receipts"
+        description="Upload paper receipts and PDF bank statements for automated ARTHA Vision OCR extraction and automatic transaction logging."
+      />
       {/* Header */}
       <PageHeader
         title="Documents & Receipts"

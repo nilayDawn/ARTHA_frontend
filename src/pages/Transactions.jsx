@@ -17,6 +17,7 @@ import PageHeader from '../components/ui/PageHeader';
 import ErrorAlert from '../components/ui/ErrorAlert';
 import LoadingState from '../components/ui/LoadingState';
 import EmptyState from '../components/ui/EmptyState';
+import SEOHead from '../components/ui/SEOHead';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -170,6 +171,10 @@ export default function Transactions() {
 
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
+      <SEOHead
+        title="Transactions"
+        description="Filter, track, edit, and log personal financial transactions with category classification and real-time income/expense analysis."
+      />
       {/* Header */}
       <PageHeader
         title="Transaction Management"

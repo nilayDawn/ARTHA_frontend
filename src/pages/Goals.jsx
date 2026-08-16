@@ -16,6 +16,7 @@ import PageHeader from '../components/ui/PageHeader';
 import ErrorAlert from '../components/ui/ErrorAlert';
 import LoadingState from '../components/ui/LoadingState';
 import EmptyState from '../components/ui/EmptyState';
+import SEOHead from '../components/ui/SEOHead';
 
 export default function Goals() {
   const [goals, setGoals] = useState([]);
@@ -131,6 +132,10 @@ export default function Goals() {
 
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
+      <SEOHead
+        title="Savings Goals"
+        description="Set financial targets, track deposit progress, and manage emergency funds and major purchase milestones."
+      />
       {/* Header */}
       <PageHeader
         title="Financial Goals"
