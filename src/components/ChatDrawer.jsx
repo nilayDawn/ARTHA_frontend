@@ -55,11 +55,19 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
         },
       ]);
     } catch (err) {
+      const errorDetail = err.response?.data?.detail || err.message || '';
+      const isQuotaOrKeyError =
+        err.response?.status === 429 ||
+        /quota|exhausted|rate limit|api_key|429|resource_exhausted/i.test(errorDetail);
+
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I ran into an issue connecting with the AI agent. Please try again.',
+          content: isQuotaOrKeyError
+            ? '⚠️ System default API key quota has been exhausted. Please configure your own ARTHA API Key to continue using your personal AI CFO features uninterrupted.'
+            : `Sorry, I ran into an issue connecting with the AI agent: ${errorDetail || 'Please try again.'}`,
+          isQuotaError: isQuotaOrKeyError,
         },
       ]);
     } finally {
@@ -132,6 +140,19 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
                   }`}
                 >
                   <div className="whitespace-pre-wrap">{msg.content}</div>
+                  
+                  {/* Quota Exhaustion Action Button */}
+                  {msg.isQuotaError && (
+                    <button
+                      type="button"
+                      onClick={onOpenApiKeyModal}
+                      className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-[#D6A84F] hover:bg-[#c49742] text-black font-bold text-[11px] rounded-lg transition-colors cursor-pointer shadow-md"
+                    >
+                      <Key className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>Configure ARTHA API Key</span>
+                    </button>
+                  )}
+
                   {msg.memories && msg.memories.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-neutral-800 text-[10px] text-neutral-500">
                       Context recalled: {msg.memories.join(', ')}

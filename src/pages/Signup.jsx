@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { User, Mail, Lock } from 'lucide-react';
 import AuthCard from '../components/ui/AuthCard';
 import GoogleAuthButton from '../components/ui/GoogleAuthButton';
+import SEOHead from '../components/ui/SEOHead';
 
 const Signup = () => {
   const [fullName, setFullName] = useState('');

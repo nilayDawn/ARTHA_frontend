@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Mail, Lock } from 'lucide-react';
 import AuthCard from '../components/ui/AuthCard';
 import GoogleAuthButton from '../components/ui/GoogleAuthButton';
+import SEOHead from '../components/ui/SEOHead';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -61,6 +62,10 @@ const Login = () => {
         </>
       }
     >
+      <SEOHead
+        title="Sign In"
+        description="Sign in to your ARTHA AI CFO account to manage income, expenses, and personal wealth."
+      />
       {/* Google OAuth Login Button */}
       <GoogleAuthButton text="Sign in with Google" onError={(errText) => setError(errText)} />
 
