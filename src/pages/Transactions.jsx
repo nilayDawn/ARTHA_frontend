@@ -8,12 +8,15 @@ import {
   ArrowUpRight,
   X,
   Loader2,
-  AlertCircle,
   Calendar,
   Edit2,
   Check
 } from 'lucide-react';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction } from '../services/api';
+import PageHeader from '../components/ui/PageHeader';
+import ErrorAlert from '../components/ui/ErrorAlert';
+import LoadingState from '../components/ui/LoadingState';
+import EmptyState from '../components/ui/EmptyState';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -168,19 +171,19 @@ export default function Transactions() {
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">Transaction Management</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Edit categories, search, filter by date, and manage expenses</p>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-          Add Transaction
-        </button>
-      </div>
+      <PageHeader
+        title="Transaction Management"
+        subtitle="Edit categories, search, filter by date, and manage expenses"
+        action={
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            Add Transaction
+          </button>
+        }
+      />
 
       {/* Stats Summary */}
       <div className="grid grid-cols-3 gap-3.5">
@@ -256,26 +259,18 @@ export default function Transactions() {
       </div>
 
       {/* Error Notification */}
-      {error && (
-        <div className="py-2.5 px-3.5 bg-red-500/5 border border-red-500/10 text-red-400 text-xs rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorAlert message={error} />
 
       {/* Data Table */}
       <div className="bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center h-40 text-neutral-500 gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-            <span className="text-xs">Loading records...</span>
-          </div>
+          <LoadingState message="Loading records..." />
         ) : transactions.length === 0 ? (
-          <div className="py-16 text-center space-y-2">
-            <Receipt className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
-            <p className="text-neutral-500 text-[13px]">No matching transactions found</p>
-            <p className="text-neutral-600 text-[11px]">Clear date/category filters or search term</p>
-          </div>
+          <EmptyState
+            icon={Receipt}
+            title="No matching transactions found"
+            subtitle="Clear date/category filters or search term"
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">

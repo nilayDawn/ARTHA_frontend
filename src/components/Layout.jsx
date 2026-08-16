@@ -109,7 +109,7 @@ export default function Layout() {
             className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-[#D6A84F] border border-neutral-800 py-2 px-3 rounded-lg text-xs font-medium transition cursor-pointer"
           >
             <Key className="w-3.5 h-3.5" />
-            LLM API Key
+            ARTHA API Key
           </button>
 
           <button
@@ -302,7 +302,7 @@ export default function Layout() {
             <button
               onClick={() => setApiKeyOpen(true)}
               className="p-2 bg-neutral-900 hover:bg-neutral-800 text-[#D6A84F] rounded-xl border border-neutral-800 text-xs flex items-center gap-1.5 cursor-pointer transition"
-              title="LLM API Key Settings"
+              title="ARTHA API Key Settings"
             >
               <Key className="w-4 h-4 text-[#D6A84F]" />
               <span className="hidden sm:inline text-xs font-medium">API Key</span>

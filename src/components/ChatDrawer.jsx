@@ -7,7 +7,7 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hello! I'm FinPilot, your AI financial employee. Ask me anything about your income, expenses, savings goals, or budgets!",
+      content: "Hello! I'm ARTHA, your AI financial employee. Ask me anything about your income, expenses, savings goals, or budgets!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -22,7 +22,7 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
-      setHasCustomKey(!!localStorage.getItem('user_gemini_api_key'));
+      setHasCustomKey(!!(localStorage.getItem('user_artha_api_key') || localStorage.getItem('user_gemini_api_key')));
     }
   }, [messages, isOpen]);
 
@@ -94,7 +94,7 @@ export default function ChatDrawer({ isOpen, onClose, onOpenApiKeyModal }) {
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
                     : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
                 }`}
-                title={hasCustomKey ? 'Custom API Key Active (Click to edit)' : 'Click to set custom LLM API Key'}
+                title={hasCustomKey ? 'Custom API Key Active (Click to edit)' : 'Click to set custom ARTHA API Key'}
               >
                 <Key className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-medium hidden sm:inline">

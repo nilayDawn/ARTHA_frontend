@@ -25,7 +25,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      const stored = localStorage.getItem('user_gemini_api_key') || '';
+      const stored = localStorage.getItem('user_artha_api_key') || localStorage.getItem('user_gemini_api_key') || '';
       setActiveKey(stored);
       setApiKey(stored);
       setNotification(null);
@@ -52,7 +52,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
     } catch (err) {
       setNotification({
         type: 'error',
-        text: err.response?.data?.detail || 'Failed to validate API key with Gemini servers.'
+        text: err.response?.data?.detail || 'Failed to validate API key with servers.'
       });
     } finally {
       setTesting(false);
@@ -70,9 +70,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
       setNotification(null);
       const res = await validateApiKey(apiKey.trim());
       if (res.data?.valid) {
-        localStorage.setItem('user_gemini_api_key', apiKey.trim());
+        localStorage.setItem('user_artha_api_key', apiKey.trim());
         setActiveKey(apiKey.trim());
-        setNotification({ type: 'success', text: 'Custom Gemini API Key saved! ARTHA will now prioritize your key.' });
+        setNotification({ type: 'success', text: 'Custom API Key saved! ARTHA will now prioritize your key.' });
         setTimeout(() => {
           onClose();
         }, 1200);
@@ -90,6 +90,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
   };
 
   const handleClearKey = () => {
+    localStorage.removeItem('user_artha_api_key');
     localStorage.removeItem('user_gemini_api_key');
     setActiveKey('');
     setApiKey('');
@@ -116,9 +117,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
             </div>
             <div>
               <h3 className="font-semibold text-base text-white flex items-center gap-2">
-                LLM Model API Key Settings
+                ARTHA API Key Settings
               </h3>
-              <p className="text-xs text-neutral-400">Configure custom Google Gemini API Key</p>
+              <p className="text-xs text-neutral-400">Configure custom ARTHA API Key</p>
             </div>
           </div>
           <button
@@ -157,14 +158,14 @@ export default function ApiKeyModal({ isOpen, onClose }) {
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1.5 flex items-center justify-between">
-              <span>Google Gemini API Key</span>
+              <span>ARTHA API Key</span>
               <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
                 rel="noreferrer"
                 className="text-[#D6A84F] hover:underline flex items-center gap-1 text-[11px]"
               >
-                Get Free API Key <ExternalLink className="w-3 h-3" />
+                Get API Key <ExternalLink className="w-3 h-3" />
               </a>
             </label>
 
@@ -215,7 +216,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
               <span>Prioritized Intelligent Fallback</span>
             </div>
             <p className="leading-normal">
-              When set, ARTHA AI will route all reasoning, security guardrails, receipt OCR, and vector embeddings through your API key first. If your key runs out of quota or fails, it automatically falls back to system keys.
+              When set, ARTHA will route all reasoning, security guardrails, receipt OCR, and vector embeddings through your API key first. If your key runs out of quota or fails, it automatically falls back to system keys.
             </p>
           </div>
 

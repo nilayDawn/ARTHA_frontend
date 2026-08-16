@@ -19,7 +19,7 @@ API.interceptors.request.use(async (config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  const customApiKey = localStorage.getItem('user_gemini_api_key');
+  const customApiKey = localStorage.getItem('user_artha_api_key') || localStorage.getItem('user_gemini_api_key');
   if (customApiKey && customApiKey.trim()) {
     config.headers['X-User-LLM-Key'] = customApiKey.trim();
   }
@@ -53,7 +53,7 @@ export const deleteGoal = (id) => API.delete(`/goals/${id}`);
 export const validateApiKey = (apiKey) => API.post('/chat/validate-key', { api_key: apiKey });
 
 export const chatWithAgent = async (message, history = [], customApiKey = null) => {
-  const keyToUse = customApiKey || localStorage.getItem('user_gemini_api_key');
+  const keyToUse = customApiKey || localStorage.getItem('user_artha_api_key') || localStorage.getItem('user_gemini_api_key');
   const payload = { message, history };
   if (keyToUse && keyToUse.trim()) {
     payload.custom_api_key = keyToUse.trim();

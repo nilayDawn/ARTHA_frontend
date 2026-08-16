@@ -6,12 +6,15 @@ import {
   ExternalLink, 
   Loader2, 
   CheckCircle2, 
-  AlertCircle,
   Receipt,
   FileCheck,
   Sparkles
 } from 'lucide-react';
 import { getDocuments, uploadDocument, deleteDocument } from '../services/api';
+import PageHeader from '../components/ui/PageHeader';
+import ErrorAlert from '../components/ui/ErrorAlert';
+import LoadingState from '../components/ui/LoadingState';
+import EmptyState from '../components/ui/EmptyState';
 
 export default function Documents() {
   const [documents, setDocuments] = useState([]);
@@ -87,12 +90,10 @@ export default function Documents() {
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight">Documents & Receipts</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Upload receipts or bank statements for AI vision extraction & transaction logging</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Documents & Receipts"
+        subtitle="Upload receipts or bank statements for ARTHA Vision extraction & transaction logging"
+      />
 
       {/* Upload Zone */}
       <div className="bg-neutral-950 border border-neutral-900 border-dashed rounded-xl p-6 text-center space-y-3 relative">
@@ -114,24 +115,19 @@ export default function Documents() {
 
         <div>
           <p className="text-sm font-medium text-white">
-            {uploading ? 'Processing document with Gemini AI Vision...' : 'Click or Drag & Drop receipt photo / bank statement'}
+            {uploading ? 'Processing document with ARTHA Vision...' : 'Click or Drag & Drop receipt photo / bank statement'}
           </p>
           <p className="text-xs text-neutral-500 mt-1">Supports JPG, PNG, WEBP receipts & PDF statements</p>
         </div>
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full text-[11px] text-neutral-400">
           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-          <span>AI Vision OCR auto-extracts merchant, amount, category & date</span>
+          <span>ARTHA Vision OCR auto-extracts merchant, amount, category & date</span>
         </div>
       </div>
 
       {/* Notifications */}
-      {error && (
-        <div className="py-2.5 px-3.5 bg-red-500/5 border border-red-500/10 text-red-400 text-xs rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorAlert message={error} />
 
       {uploadSuccess && (
         <div className="py-3 px-4 bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg space-y-1.5">
@@ -157,16 +153,13 @@ export default function Documents() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-40 text-neutral-500 gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-            <span className="text-xs">Loading document library...</span>
-          </div>
+          <LoadingState message="Loading document library..." />
         ) : documents.length === 0 ? (
-          <div className="py-16 text-center space-y-2">
-            <FileText className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
-            <p className="text-neutral-500 text-[13px]">No documents uploaded yet</p>
-            <p className="text-neutral-600 text-[11px]">Upload receipts or PDF bank statements above</p>
-          </div>
+          <EmptyState
+            icon={FileText}
+            title="No documents uploaded yet"
+            subtitle="Upload receipts or PDF bank statements above"
+          />
         ) : (
           <div className="divide-y divide-neutral-900">
             {documents.map((doc) => (

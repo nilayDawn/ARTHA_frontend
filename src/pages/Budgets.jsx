@@ -9,11 +9,14 @@ import {
   CheckCircle2, 
   Loader2, 
   X,
-  AlertCircle,
   Sparkles
 } from 'lucide-react';
 import { getBudgets, createBudget, deleteBudget, getTransactions } from '../services/api';
 import { getCategorySpendingForMonth, getCurrentMonthStr } from '../utils/financeUtils';
+import PageHeader from '../components/ui/PageHeader';
+import ErrorAlert from '../components/ui/ErrorAlert';
+import LoadingState from '../components/ui/LoadingState';
+import EmptyState from '../components/ui/EmptyState';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -142,19 +145,19 @@ export default function Budgets() {
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight">Budget Management</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Set category budget limits (resets automatically every month)</p>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-          Create Budget
-        </button>
-      </div>
+      <PageHeader
+        title="Budget Management"
+        subtitle="Set category budget limits (resets automatically every month)"
+        action={
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            Create Budget
+          </button>
+        }
+      />
 
       {/* AI Progress Monitoring Alerts */}
       {aiAlerts.length > 0 && (
@@ -219,25 +222,17 @@ export default function Budgets() {
       </div>
 
       {/* Error */}
-      {error && (
-        <div className="py-2.5 px-3.5 bg-red-500/5 border border-red-500/10 text-red-400 text-xs rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorAlert message={error} />
 
       {/* Budget Cards Grid */}
       {loading ? (
-        <div className="flex items-center justify-center h-40 text-neutral-500 gap-2">
-          <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-          <span className="text-xs">Loading budgets...</span>
-        </div>
+        <LoadingState message="Loading budgets..." />
       ) : budgets.length === 0 ? (
-        <div className="bg-neutral-950 border border-neutral-900 py-16 rounded-xl text-center space-y-2">
-          <PieChart className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
-          <p className="text-neutral-500 text-[13px]">No budgets created yet</p>
-          <p className="text-neutral-600 text-[11px]">Set category limits to track spending</p>
-        </div>
+        <EmptyState
+          icon={PieChart}
+          title="No budgets created yet"
+          subtitle="Set category limits to track spending"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {budgets.map((b) => {

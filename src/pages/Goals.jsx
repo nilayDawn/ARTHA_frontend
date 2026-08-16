@@ -9,10 +9,13 @@ import {
   TrendingUp, 
   Loader2, 
   X,
-  AlertCircle,
   PlusCircle
 } from 'lucide-react';
 import { getGoals, createGoal, updateGoal, deleteGoal } from '../services/api';
+import PageHeader from '../components/ui/PageHeader';
+import ErrorAlert from '../components/ui/ErrorAlert';
+import LoadingState from '../components/ui/LoadingState';
+import EmptyState from '../components/ui/EmptyState';
 
 export default function Goals() {
   const [goals, setGoals] = useState([]);
@@ -129,19 +132,19 @@ export default function Goals() {
   return (
     <div className="space-y-5 w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight">Financial Goals</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Track MacBook Purchase, Emergency Fund, Education & Vacation savings</p>
-        </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-          New Goal
-        </button>
-      </div>
+      <PageHeader
+        title="Financial Goals"
+        subtitle="Track MacBook Purchase, Emergency Fund, Education & Vacation savings"
+        action={
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            New Goal
+          </button>
+        }
+      />
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -179,25 +182,17 @@ export default function Goals() {
       </div>
 
       {/* Error */}
-      {error && (
-        <div className="py-2.5 px-3.5 bg-red-500/5 border border-red-500/10 text-red-400 text-xs rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorAlert message={error} />
 
       {/* Goals Grid */}
       {loading ? (
-        <div className="flex items-center justify-center h-40 text-neutral-500 gap-2">
-          <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-          <span className="text-xs">Loading goals...</span>
-        </div>
+        <LoadingState message="Loading goals..." />
       ) : goals.length === 0 ? (
-        <div className="bg-neutral-950 border border-neutral-900 py-16 rounded-xl text-center space-y-2">
-          <Target className="w-8 h-8 mx-auto stroke-1 text-neutral-700" />
-          <p className="text-neutral-500 text-[13px]">No financial goals set yet</p>
-          <p className="text-neutral-600 text-[11px]">Create savings goals like MacBook Purchase or Emergency Fund</p>
-        </div>
+        <EmptyState
+          icon={Target}
+          title="No financial goals set yet"
+          subtitle="Create savings goals like MacBook Purchase or Emergency Fund"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {goals.map((g) => {

@@ -112,7 +112,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
                 {uploading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-black" />
-                    <span>Gemini AI Vision Extracting Receipt...</span>
+                    <span>ARTHA Vision Extracting Receipt...</span>
                   </>
                 ) : (
                   <>

@@ -1,5 +1,5 @@
 // ARTHA - AI-Powered Personal Finance Assistant
-// Copyright (C) 2026  Nilay Dawn <nilaydawn@gmail.com>
+// Copyright (C) 2026  Nilay Dawn
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
