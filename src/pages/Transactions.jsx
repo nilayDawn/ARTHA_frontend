@@ -18,6 +18,7 @@ import ErrorAlert from '../components/ui/ErrorAlert';
 import LoadingState from '../components/ui/LoadingState';
 import EmptyState from '../components/ui/EmptyState';
 import SEOHead from '../components/ui/SEOHead';
+import CustomSelect from '../components/ui/CustomSelect';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -182,7 +183,7 @@ export default function Transactions() {
         action={
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             Add Transaction
@@ -192,28 +193,28 @@ export default function Transactions() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-3 gap-3.5">
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Records</span>
-            <Receipt className="w-3.5 h-3.5 text-emerald-500/50" />
+            <Receipt className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-white">{transactions.length}</div>
+          <div className="text-2xl font-bold text-white tracking-tight">{transactions.length}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Total Spent</span>
-            <ArrowDownRight className="w-3.5 h-3.5 text-red-500/50" />
+            <ArrowDownRight className="w-3.5 h-3.5 text-red-400" />
           </div>
-          <div className="text-lg font-semibold text-red-400">₹{totalExpenses.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-red-400 tracking-tight">₹{totalExpenses.toLocaleString()}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Total Income</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/50" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-emerald-400">₹{totalIncome.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-emerald-400 tracking-tight">₹{totalIncome.toLocaleString()}</div>
         </div>
       </div>
 
@@ -221,27 +222,26 @@ export default function Transactions() {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
         {/* Search */}
         <div className="relative sm:col-span-2">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
           <input
             type="text"
             placeholder="Search merchant, category, or amount..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-8 pr-3 py-2 text-[13px] text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-neutral-700 transition-colors"
+            className="w-full bg-[#0D0D0D] border border-white/[0.065] rounded-lg pl-8 pr-3 py-2 text-[13px] text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors shadow-sm"
           />
         </div>
 
         {/* Category */}
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="bg-neutral-950 border border-neutral-900 text-neutral-300 text-[13px] rounded-lg px-3 py-2 focus:outline-none focus:border-neutral-700 transition-colors cursor-pointer"
-        >
-          <option value="All">All Categories</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        <div>
+          <CustomSelect
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            options={['All', ...CATEGORIES]}
+            placeholder="All Categories"
+            size="md"
+          />
+        </div>
 
         {/* Date Range */}
         <div className="flex items-center gap-1">
@@ -250,7 +250,7 @@ export default function Transactions() {
             title="Start Date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-900 text-neutral-400 text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-neutral-700"
+            className="w-full bg-[#0D0D0D] border border-white/[0.065] text-neutral-400 text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-emerald-500/50 shadow-sm"
           />
           <span className="text-neutral-600 text-xs">-</span>
           <input
@@ -258,7 +258,7 @@ export default function Transactions() {
             title="End Date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-900 text-neutral-400 text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-neutral-700"
+            className="w-full bg-[#0D0D0D] border border-white/[0.065] text-neutral-400 text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-emerald-500/50 shadow-sm"
           />
         </div>
       </div>
@@ -267,7 +267,7 @@ export default function Transactions() {
       <ErrorAlert message={error} />
 
       {/* Data Table */}
-      <div className="bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden">
+      <div className="artha-card rounded-xl overflow-hidden">
         {loading ? (
           <LoadingState message="Loading records..." />
         ) : transactions.length === 0 ? (
@@ -280,7 +280,7 @@ export default function Transactions() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
               <thead>
-                <tr className="text-[11px] uppercase text-neutral-600 border-b border-neutral-900">
+                <tr className="text-[11px] uppercase text-neutral-500 border-b border-white/[0.055] bg-[#090909]">
                   <th className="px-4 py-2.5 font-medium">Date</th>
                   <th className="px-4 py-2.5 font-medium">Merchant</th>
                   <th className="px-4 py-2.5 font-medium">Category</th>
@@ -294,7 +294,7 @@ export default function Transactions() {
                   const isIncome = (tx.category || '').toLowerCase() === 'income' || (tx.type || '').toLowerCase() === 'income';
 
                   return (
-                    <tr key={tx.id} className="border-b border-neutral-900/50 hover:bg-neutral-900/30 transition-colors">
+                    <tr key={tx.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                       <td className="px-4 py-2.5 text-neutral-500 text-xs">
                         {tx.date ? new Date(tx.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                       </td>
@@ -304,15 +304,14 @@ export default function Transactions() {
                       <td className="px-4 py-2.5 text-neutral-400 text-xs">
                         {editingCategoryTxId === tx.id ? (
                           <div className="flex items-center gap-1">
-                            <select
-                              value={newCategoryVal}
-                              onChange={(e) => setNewCategoryVal(e.target.value)}
-                              className="bg-neutral-900 border border-neutral-700 text-xs text-white rounded px-1.5 py-0.5"
-                            >
-                              {CATEGORIES.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                              ))}
-                            </select>
+                            <div className="w-36">
+                              <CustomSelect
+                                value={newCategoryVal}
+                                onChange={(e) => setNewCategoryVal(e.target.value)}
+                                options={CATEGORIES}
+                                size="sm"
+                              />
+                            </div>
                             <button
                               onClick={() => handleSaveCategoryEdit(tx.id)}
                               disabled={updatingId === tx.id}
@@ -329,7 +328,7 @@ export default function Transactions() {
                           </div>
                         ) : (
                           <div className="flex items-center gap-1.5 group">
-                            <span className="px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300">
+                            <span className="px-2 py-0.5 rounded bg-neutral-900 border border-white/[0.065] text-neutral-300">
                               {tx.category || 'Other'}
                             </span>
                             <button
@@ -346,7 +345,7 @@ export default function Transactions() {
                         )}
                       </td>
 
-                      <td className="px-4 py-2.5 text-neutral-600 text-[11px] capitalize">{tx.source || 'manual'}</td>
+                      <td className="px-4 py-2.5 text-neutral-500 text-[11px] capitalize">{tx.source || 'manual'}</td>
                       <td className={`px-4 py-2.5 text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-red-400'}`}>
                         {isIncome ? '+' : '-'}₹{Number(tx.amount || 0).toLocaleString()}
                       </td>
@@ -355,7 +354,7 @@ export default function Transactions() {
                         <button
                           onClick={() => handleDelete(tx.id)}
                           disabled={deletingId === tx.id}
-                          className="p-1.5 text-neutral-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors disabled:opacity-30 cursor-pointer"
+                          className="p-1.5 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors disabled:opacity-30 cursor-pointer artha-btn-interactive"
                           title="Delete Transaction"
                         >
                           {deletingId === tx.id ? (
@@ -376,19 +375,19 @@ export default function Transactions() {
 
       {/* Add Transaction Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="artha-glass rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.055]">
               <h3 className="text-sm font-semibold text-white">Add Transaction</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors cursor-pointer"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-900 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-3">
+            <form onSubmit={handleCreate} className="space-y-3.5">
               <div>
                 <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Amount (₹) *</label>
                 <input
@@ -400,7 +399,7 @@ export default function Transactions() {
                   placeholder="450.00"
                   value={formData.amount}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -412,22 +411,19 @@ export default function Transactions() {
                   placeholder="Swiggy, Amazon, Uber, etc."
                   value={formData.merchant}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
                 <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Category *</label>
-                <select
+                <CustomSelect
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700 cursor-pointer"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                  options={CATEGORIES}
+                  size="md"
+                />
               </div>
 
               <div>
@@ -438,22 +434,22 @@ export default function Transactions() {
                   name="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-white/[0.055]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-2 rounded-xl text-xs artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {submitting ? 'Saving...' : 'Add Transaction'}

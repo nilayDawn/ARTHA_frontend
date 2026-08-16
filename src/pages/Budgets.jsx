@@ -18,6 +18,7 @@ import ErrorAlert from '../components/ui/ErrorAlert';
 import LoadingState from '../components/ui/LoadingState';
 import EmptyState from '../components/ui/EmptyState';
 import SEOHead from '../components/ui/SEOHead';
+import CustomSelect from '../components/ui/CustomSelect';
 
 const CATEGORIES = [
   'Food & Dining',
@@ -156,7 +157,7 @@ export default function Budgets() {
         action={
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3.5 py-2 rounded-lg text-[13px] artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] hover:shadow-[0_6px_18px_rgba(0,217,165,0.35)] cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             Create Budget
@@ -166,7 +167,7 @@ export default function Budgets() {
 
       {/* AI Progress Monitoring Alerts */}
       {aiAlerts.length > 0 && (
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-2 text-xs">
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-2 text-xs shadow-md">
           <div className="flex items-center gap-2 font-medium text-amber-400">
             <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <span>AI Budget Monitor Alert</span>
@@ -183,39 +184,39 @@ export default function Budgets() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Budget Limit</span>
-            <Wallet className="w-3.5 h-3.5 text-emerald-500/50" />
+            <Wallet className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-white">₹{totalLimit.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-white tracking-tight">₹{totalLimit.toLocaleString()}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Total Spent</span>
-            <TrendingUp className="w-3.5 h-3.5 text-red-500/50" />
+            <TrendingUp className="w-3.5 h-3.5 text-red-400" />
           </div>
-          <div className="text-lg font-semibold text-red-400">₹{totalSpentInBudgets.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-red-400 tracking-tight">₹{totalSpentInBudgets.toLocaleString()}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Remaining</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-blue-500/50" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
           </div>
-          <div className={`text-lg font-semibold ${remainingTotal < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+          <div className={`text-2xl font-bold tracking-tight ${remainingTotal < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
             ₹{remainingTotal.toLocaleString()}
           </div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Utilization</span>
-            <PieChart className="w-3.5 h-3.5 text-purple-500/50" />
+            <PieChart className="w-3.5 h-3.5 text-purple-400" />
           </div>
-          <div className="text-lg font-semibold text-white">{overallUtilization}%</div>
-          <div className="w-full bg-neutral-900 h-1 rounded-full mt-1.5 overflow-hidden">
+          <div className="text-2xl font-bold text-purple-400 tracking-tight">{overallUtilization}%</div>
+          <div className="w-full bg-neutral-900 h-1 rounded-full mt-1.5 overflow-hidden border border-white/[0.03]">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 overallUtilization > 100 ? 'bg-red-500' : overallUtilization > 80 ? 'bg-amber-500' : 'bg-emerald-500'
@@ -259,17 +260,17 @@ export default function Budgets() {
             return (
               <div
                 key={b.id}
-                className="bg-neutral-950 border border-neutral-900 rounded-xl p-4 space-y-3 hover:border-neutral-800 transition-colors"
+                className="artha-card rounded-xl p-4 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="font-medium text-white text-[13px]">{b.category}</h3>
-                    <span className="text-[11px] text-neutral-600">Month: {b.month || getCurrentMonthStr()}</span>
+                    <span className="text-[11px] text-neutral-500">Month: {b.month || getCurrentMonthStr()}</span>
                   </div>
                   <button
                     onClick={() => handleDelete(b.id)}
                     disabled={deletingId === b.id}
-                    className="p-1 text-neutral-600 hover:text-red-400 rounded transition-colors disabled:opacity-30 cursor-pointer"
+                    className="p-1 text-neutral-500 hover:text-red-400 rounded transition-colors disabled:opacity-30 cursor-pointer artha-btn-interactive"
                     title="Delete Budget"
                   >
                     {deletingId === b.id ? (
@@ -282,10 +283,10 @@ export default function Budgets() {
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px]">
-                    <span className="text-neutral-500">Spent: ₹{spent.toLocaleString()}</span>
+                    <span className="text-neutral-400">Spent: ₹{spent.toLocaleString()}</span>
                     <span className="text-neutral-400">Limit: ₹{limit.toLocaleString()}</span>
                   </div>
-                  <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden border border-white/[0.03]">
                     <div
                       className={`h-full ${barColor} rounded-full transition-all duration-500`}
                       style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
@@ -299,7 +300,7 @@ export default function Budgets() {
                       <AlertTriangle className="w-3 h-3" /> Over by ₹{Math.abs(remaining).toLocaleString()}
                     </span>
                   ) : (
-                    <span className="text-neutral-500">₹{remaining.toLocaleString()} left</span>
+                    <span className="text-neutral-400">₹{remaining.toLocaleString()} left</span>
                   )}
                   <span className={`font-medium ${textColor}`}>{percent}%</span>
                 </div>
@@ -311,31 +312,28 @@ export default function Budgets() {
 
       {/* Add Budget Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="artha-glass rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.055]">
               <h3 className="text-sm font-semibold text-white">Create Category Budget</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors cursor-pointer"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-900 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-3">
+            <form onSubmit={handleCreate} className="space-y-3.5">
               <div>
                 <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Category *</label>
-                <select
+                <CustomSelect
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700 cursor-pointer"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                  options={CATEGORIES}
+                  size="md"
+                />
               </div>
 
               <div>
@@ -349,7 +347,7 @@ export default function Budgets() {
                   placeholder="8000"
                   value={formData.monthly_limit}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -361,22 +359,22 @@ export default function Budgets() {
                   name="month"
                   value={formData.month}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-white/[0.055]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-2 rounded-xl text-xs artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {submitting ? 'Saving...' : 'Set Budget'}

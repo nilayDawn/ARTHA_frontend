@@ -105,14 +105,14 @@ export default function ApiKeyModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
-      <div className="w-full max-w-lg bg-neutral-950 border border-neutral-900 rounded-2xl p-6 text-neutral-100 shadow-2xl relative overflow-hidden">
+      <div className="w-full max-w-lg artha-glass rounded-2xl p-6 text-neutral-100 shadow-2xl relative overflow-hidden">
         {/* Glowing Top Subtle Ambient Gradient */}
         <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#D6A84F]/10 rounded-full blur-3xl pointer-events-none"></div>
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-900">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.055]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-800 text-[#D6A84F] flex items-center justify-center shadow-inner">
+            <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/[0.08] text-[#D6A84F] flex items-center justify-center shadow-inner">
               <Key className="w-5 h-5" />
             </div>
             <div>
@@ -131,7 +131,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
         </div>
 
         {/* Active Key Status Card */}
-        <div className="my-4 p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 flex items-center justify-between text-xs">
+        <div className="my-4 p-3.5 rounded-xl bg-neutral-900/60 border border-white/[0.065] flex items-center justify-between text-xs">
           <div className="flex items-center gap-2.5">
             <div className={`w-2.5 h-2.5 rounded-full ${activeKey ? 'bg-emerald-400 animate-pulse' : 'bg-sky-400'}`}></div>
             <div>
@@ -175,7 +175,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="AIzaSy..."
-                className="w-full bg-neutral-900 border border-neutral-800 focus:border-[#D6A84F]/60 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 font-mono focus:outline-none transition-colors pr-10"
+                className="w-full bg-neutral-900 border border-white/[0.08] focus:border-[#D6A84F]/60 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 font-mono focus:outline-none transition-colors pr-10"
               />
               <button
                 type="button"
@@ -210,7 +210,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
           )}
 
           {/* Key Info Banner */}
-          <div className="p-3 rounded-xl bg-neutral-900/40 border border-neutral-900 text-[11px] text-neutral-400 space-y-1">
+          <div className="p-3 rounded-xl bg-neutral-900/40 border border-white/[0.055] text-[11px] text-neutral-400 space-y-1">
             <div className="flex items-center gap-1.5 font-medium text-neutral-300">
               <Cpu className="w-3.5 h-3.5 text-[#D6A84F]" />
               <span>Prioritized Intelligent Fallback</span>
@@ -226,7 +226,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={handleClearKey}
-                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 bg-neutral-900 hover:bg-red-500/10 text-neutral-400 hover:text-red-400 border border-neutral-800 hover:border-red-500/30 rounded-xl text-xs font-medium transition cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 bg-neutral-900 hover:bg-red-500/10 text-neutral-400 hover:text-red-400 border border-white/[0.08] hover:border-red-500/30 rounded-xl text-xs font-medium artha-btn-interactive cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Remove Custom Key
@@ -240,7 +240,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
                 type="button"
                 onClick={handleTestKey}
                 disabled={testing || saving || !apiKey.trim()}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-800 px-3.5 py-2 rounded-xl text-xs font-medium transition disabled:opacity-50 cursor-pointer"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-white/[0.08] px-3.5 py-2 rounded-xl text-xs font-medium artha-btn-interactive disabled:opacity-50 cursor-pointer"
               >
                 {testing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {testing ? 'Validating...' : 'Test Key'}
@@ -250,7 +250,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
                 type="button"
                 onClick={handleSaveKey}
                 disabled={testing || saving || !apiKey.trim()}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#D6A84F] to-[#b3883b] hover:from-[#e5b95f] hover:to-[#c49747] text-black px-4 py-2 rounded-xl text-xs font-bold transition disabled:opacity-50 cursor-pointer shadow-[0_0_15px_rgba(214,168,79,0.2)]"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#D6A84F] to-[#b3883b] hover:from-[#e5b95f] hover:to-[#c49747] text-black px-4 py-2 rounded-xl text-xs font-bold artha-btn-interactive disabled:opacity-50 cursor-pointer shadow-[0_0_18px_rgba(214,168,79,0.25)]"
               >
                 {saving ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

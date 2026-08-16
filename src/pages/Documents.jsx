@@ -101,7 +101,7 @@ export default function Documents() {
       />
 
       {/* Upload Zone */}
-      <div className="bg-neutral-950 border border-neutral-900 border-dashed rounded-xl p-6 text-center space-y-3 relative">
+      <div className="artha-card border-dashed border-emerald-500/20 hover:border-emerald-500/40 rounded-xl p-6 text-center space-y-3 relative transition-all duration-200">
         <input
           type="file"
           accept="image/*,.pdf,.csv"
@@ -110,7 +110,7 @@ export default function Documents() {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
         />
         
-        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(0,217,165,0.15)]">
           {uploading ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
@@ -125,7 +125,7 @@ export default function Documents() {
           <p className="text-xs text-neutral-500 mt-1">Supports JPG, PNG, WEBP receipts & PDF statements</p>
         </div>
 
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full text-[11px] text-neutral-400">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-900/80 border border-white/[0.065] rounded-full text-[11px] text-neutral-400">
           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
           <span>ARTHA Vision OCR auto-extracts merchant, amount, category & date</span>
         </div>
@@ -135,7 +135,7 @@ export default function Documents() {
       <ErrorAlert message={error} />
 
       {uploadSuccess && (
-        <div className="py-3 px-4 bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg space-y-1.5">
+        <div className="py-3 px-4 bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl space-y-1.5 shadow-md">
           <div className="flex items-center gap-2 font-medium">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
             <span>{uploadSuccess.message}</span>
@@ -152,8 +152,8 @@ export default function Documents() {
       )}
 
       {/* Uploaded Documents List */}
-      <div className="bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-neutral-900 flex items-center justify-between">
+      <div className="artha-card rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-white/[0.055] flex items-center justify-between">
           <h3 className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Uploaded Documents ({documents.length})</h3>
         </div>
 
@@ -166,11 +166,11 @@ export default function Documents() {
             subtitle="Upload receipts or PDF bank statements above"
           />
         ) : (
-          <div className="divide-y divide-neutral-900">
+          <div className="divide-y divide-white/[0.04]">
             {documents.map((doc) => (
-              <div key={doc.id} className="p-4 flex items-center justify-between hover:bg-neutral-900/30 transition-colors">
+              <div key={doc.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-neutral-900 border border-neutral-800 rounded-lg text-emerald-400">
+                  <div className="p-2.5 bg-neutral-900 border border-white/[0.065] rounded-lg text-emerald-400">
                     {doc.document_type === 'receipt' ? (
                       <Receipt className="w-4 h-4" />
                     ) : (
@@ -193,7 +193,7 @@ export default function Documents() {
                       href={doc.signed_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 rounded transition-colors flex items-center gap-1 text-xs"
+                      className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 rounded-lg transition-colors flex items-center gap-1 text-xs artha-btn-interactive"
                       title="View File"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ export default function Documents() {
                   <button
                     onClick={() => handleDelete(doc.id)}
                     disabled={deletingId === doc.id}
-                    className="p-1.5 text-neutral-600 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors disabled:opacity-30 cursor-pointer"
+                    className="p-1.5 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-30 cursor-pointer artha-btn-interactive"
                     title="Delete Document"
                   >
                     {deletingId === doc.id ? (

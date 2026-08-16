@@ -55,15 +55,15 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-neutral-950 border border-neutral-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="artha-glass rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative">
         {/* Modal Header */}
-        <div className="p-4 border-b border-neutral-900 flex items-center justify-between">
+        <div className="p-4 border-b border-white/[0.055] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="text-emerald-400 w-4 h-4" />
             <h3 className="font-semibold text-white text-sm">Upload Receipt / Statement</h3>
           </div>
-          <button onClick={resetModal} className="text-neutral-500 hover:text-white p-1 rounded-lg hover:bg-neutral-900 cursor-pointer">
+          <button onClick={resetModal} className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-900 transition-colors cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -75,7 +75,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
-                className="border border-dashed border-neutral-800 hover:border-emerald-500/50 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-neutral-900/30"
+                className="border border-dashed border-white/[0.08] hover:border-emerald-500/50 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-neutral-900/40"
               >
                 <UploadCloud className="w-8 h-8 text-emerald-400 mb-3 stroke-1" />
                 <p className="text-xs font-medium text-neutral-200">
@@ -91,14 +91,14 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
                 />
                 <label
                   htmlFor="document-input"
-                  className="mt-4 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 rounded-lg cursor-pointer border border-neutral-800 transition-colors"
+                  className="mt-4 px-3.5 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 rounded-xl cursor-pointer border border-white/[0.08] transition-colors artha-btn-interactive"
                 >
                   Select File
                 </label>
               </div>
 
               {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs flex items-center gap-2">
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -107,7 +107,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
               <button
                 onClick={handleUpload}
                 disabled={!file || uploading}
-                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black text-xs font-semibold rounded-xl flex items-center justify-center gap-2 artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
               >
                 {uploading ? (
                   <>
@@ -133,7 +133,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
               </div>
 
               {result.extracted_data && (
-                <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 space-y-2 text-xs">
+                <div className="bg-neutral-900/80 rounded-xl p-4 border border-white/[0.065] space-y-2 text-xs">
                   <h5 className="font-semibold text-neutral-200 mb-2">Extracted Transaction:</h5>
                   <div className="flex justify-between text-neutral-400">
                     <span>Merchant:</span>
@@ -156,7 +156,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onSuccess }) {
 
               <button
                 onClick={resetModal}
-                className="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer border border-neutral-800"
+                className="w-full py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium rounded-xl transition-colors cursor-pointer border border-white/[0.08] artha-btn-interactive"
               >
                 Close
               </button>

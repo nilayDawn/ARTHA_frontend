@@ -153,36 +153,36 @@ export default function Goals() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Target</span>
-            <Target className="w-3.5 h-3.5 text-emerald-500/50" />
+            <Target className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-white">₹{totalTarget.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-white tracking-tight">₹{totalTarget.toLocaleString()}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Saved</span>
-            <PiggyBank className="w-3.5 h-3.5 text-blue-500/50" />
+            <PiggyBank className="w-3.5 h-3.5 text-blue-400" />
           </div>
-          <div className="text-lg font-semibold text-blue-400">₹{totalSaved.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-blue-400 tracking-tight">₹{totalSaved.toLocaleString()}</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Progress</span>
-            <TrendingUp className="w-3.5 h-3.5 text-purple-500/50" />
+            <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
           </div>
-          <div className="text-lg font-semibold text-white">{avgProgress}%</div>
+          <div className="text-2xl font-bold text-purple-400 tracking-tight">{avgProgress}%</div>
         </div>
 
-        <div className="bg-neutral-950 border border-neutral-900 p-3.5 rounded-xl">
-          <div className="flex items-center justify-between text-neutral-500 text-[11px] font-medium uppercase tracking-wider mb-1">
+        <div className="artha-card p-3.5 rounded-xl">
+          <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
             <span>Achieved</span>
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-500/50" />
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-emerald-400">{completedGoalsCount} / {goals.length}</div>
+          <div className="text-2xl font-bold text-emerald-400 tracking-tight">{completedGoalsCount} / {goals.length}</div>
         </div>
       </div>
 
@@ -215,9 +215,9 @@ export default function Goals() {
             return (
               <div
                 key={g.id}
-                className={`bg-neutral-950 border ${
-                  isCompleted ? 'border-emerald-500/30' : 'border-neutral-900'
-                } rounded-xl p-4 space-y-3 hover:border-neutral-800 transition-colors flex flex-col justify-between`}
+                className={`artha-card ${
+                  isCompleted ? 'border-emerald-500/35 shadow-[0_8px_30px_rgba(0,217,165,0.08)]' : ''
+                } rounded-xl p-4 space-y-3 flex flex-col justify-between`}
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
@@ -225,20 +225,20 @@ export default function Goals() {
                       <h3 className="font-semibold text-white text-sm flex items-center gap-1.5">
                         {g.goal_name}
                         {isCompleted && (
-                          <span className="px-1.5 py-0.5 text-[9px] uppercase tracking-wider font-bold bg-emerald-500/10 text-emerald-400 rounded">
+                          <span className="px-1.5 py-0.5 text-[9px] uppercase tracking-wider font-bold bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/20">
                             Done
                           </span>
                         )}
                       </h3>
                       <p className="text-[11px] text-neutral-500 flex items-center gap-1 mt-0.5">
-                        <Calendar className="w-3 h-3 text-neutral-600" />
+                        <Calendar className="w-3 h-3 text-neutral-500" />
                         Expected completion: <span className="text-neutral-300 font-medium">{expectedCompletion}</span>
                       </p>
                     </div>
                     <button
                       onClick={() => handleDelete(g.id)}
                       disabled={deletingId === g.id}
-                      className="p-1 text-neutral-600 hover:text-red-400 rounded transition-colors disabled:opacity-30 cursor-pointer"
+                      className="p-1 text-neutral-500 hover:text-red-400 rounded transition-colors disabled:opacity-30 cursor-pointer artha-btn-interactive"
                       title="Delete Goal"
                     >
                       {deletingId === g.id ? (
@@ -249,7 +249,7 @@ export default function Goals() {
                     </button>
                   </div>
 
-                  <div className="space-y-1 bg-neutral-900/60 p-2.5 rounded-lg border border-neutral-900">
+                  <div className="space-y-1 bg-neutral-900/60 p-2.5 rounded-lg border border-white/[0.05]">
                     <div className="flex justify-between text-xs">
                       <span className="text-neutral-400">Target:</span>
                       <span className="font-semibold text-white">₹{target.toLocaleString()}</span>
@@ -258,13 +258,13 @@ export default function Goals() {
                       <span className="text-neutral-400">Saved:</span>
                       <span className="font-semibold text-emerald-400">₹{saved.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-xs pt-1 border-t border-neutral-800/60">
+                    <div className="flex justify-between text-xs pt-1 border-t border-white/[0.05]">
                       <span className="text-neutral-400">Progress:</span>
                       <span className="font-bold text-purple-400">{percent}%</span>
                     </div>
                   </div>
 
-                  <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden border border-white/[0.03]">
                     <div
                       className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                       style={{ width: `${percent}%` }}
@@ -272,7 +272,7 @@ export default function Goals() {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-neutral-900 flex items-center justify-between">
+                <div className="pt-2 border-t border-white/[0.055] flex items-center justify-between">
                   <span className="text-[11px] text-neutral-500">
                     {isCompleted ? (
                       <span className="text-emerald-400 font-medium">Goal Achieved!</span>
@@ -280,16 +280,26 @@ export default function Goals() {
                       <>Remaining: <strong className="text-neutral-300">₹{(target - saved).toLocaleString()}</strong></>
                     )}
                   </span>
-                  <button
-                    onClick={() => {
-                      setDepositGoal(g);
-                      setDepositAmount('');
-                    }}
-                    className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-400 text-black px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer"
-                  >
-                    <PlusCircle className="w-3 h-3" />
-                    Add Savings
-                  </button>
+                  {isCompleted ? (
+                    <button
+                      disabled
+                      className="flex items-center gap-1.5 bg-neutral-900/80 border border-white/[0.08] text-neutral-400 px-3 py-1 rounded-lg text-[11px] font-medium cursor-not-allowed opacity-80"
+                    >
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      Goal Completed
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setDepositGoal(g);
+                        setDepositAmount('');
+                      }}
+                      className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-400 text-black px-2.5 py-1 rounded-lg text-[11px] font-semibold artha-btn-interactive shadow-sm cursor-pointer"
+                    >
+                      <PlusCircle className="w-3 h-3" />
+                      Add Savings
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -299,19 +309,19 @@ export default function Goals() {
 
       {/* Add Goal Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="artha-glass rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.055]">
               <h3 className="text-sm font-semibold text-white">Create Financial Goal</h3>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-900 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateGoal} className="space-y-3">
+            <form onSubmit={handleCreateGoal} className="space-y-3.5">
               <div>
                 <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Goal Name *</label>
                 <input
@@ -321,7 +331,7 @@ export default function Goals() {
                   placeholder="e.g. MacBook Purchase"
                   value={formData.goal_name}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -336,7 +346,7 @@ export default function Goals() {
                   placeholder="100000"
                   value={formData.target_amount}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -350,7 +360,7 @@ export default function Goals() {
                   placeholder="45000"
                   value={formData.saved_amount}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -361,22 +371,22 @@ export default function Goals() {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleInputChange}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-white/[0.055]">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors"
+                  className="px-3.5 py-2 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-2 rounded-xl text-xs artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {submitting ? 'Creating...' : 'Create Goal'}
@@ -389,19 +399,19 @@ export default function Goals() {
 
       {/* Add Savings Modal */}
       {depositGoal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-neutral-950 border border-neutral-800 rounded-xl w-full max-w-md p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="artha-glass rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.055]">
               <h3 className="text-sm font-semibold text-white">Add Savings to "{depositGoal.goal_name}"</h3>
               <button
                 onClick={() => setDepositGoal(null)}
-                className="text-neutral-500 hover:text-neutral-300 p-1 rounded transition-colors"
+                className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-900 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleDepositSubmit} className="space-y-3">
+            <form onSubmit={handleDepositSubmit} className="space-y-3.5">
               <div>
                 <label className="block text-[11px] font-medium text-neutral-400 mb-1 uppercase tracking-wider">Amount (₹) *</label>
                 <input
@@ -412,28 +422,28 @@ export default function Goals() {
                   placeholder="5000"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700"
+                  className="w-full bg-neutral-900 border border-white/[0.08] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
                   autoFocus
                 />
               </div>
 
-              <div className="p-2.5 bg-neutral-900 rounded-lg text-xs text-neutral-400 flex justify-between">
+              <div className="p-3 bg-neutral-900/80 rounded-xl border border-white/[0.05] text-xs text-neutral-400 flex justify-between">
                 <span>Current Saved: <strong className="text-neutral-200">₹{Number(depositGoal.saved_amount || 0).toLocaleString()}</strong></span>
                 <span>New Total: <strong className="text-emerald-400">₹{(Number(depositGoal.saved_amount || 0) + Number(depositAmount || 0)).toLocaleString()}</strong></span>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-neutral-800">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-white/[0.055]">
                 <button
                   type="button"
                   onClick={() => setDepositGoal(null)}
-                  className="px-3 py-1.5 text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors"
+                  className="px-3.5 py-2 text-xs text-neutral-400 hover:text-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updatingGoal}
-                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold px-4 py-2 rounded-xl text-xs artha-btn-interactive shadow-[0_4px_14px_rgba(0,217,165,0.22)] cursor-pointer"
                 >
                   {updatingGoal && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   {updatingGoal ? 'Saving...' : 'Add to Goal'}
