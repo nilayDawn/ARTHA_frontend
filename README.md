@@ -51,18 +51,20 @@ graph TD
         Router -->|Lazy| Budgets[Budgets & Goals ~25 KB]
     end
 
-    subgraph Global Context Layer
-        Dashboard & Transactions & Budgets <--> FinanceCtx[FinanceContext Global State & Refresh Bus]
-        Auth <--> AuthCtx[AuthContext Supabase Session]
+    subgraph Redux Toolkit State Management
+        Dashboard & Transactions & Budgets <--> ReduxStore[Redux Toolkit Store]
+        ReduxStore --> AuthSlice[authSlice: Session, User, Profile]
+        ReduxStore --> FinanceSlice[financeSlice: Tx, Budgets, Goals, Summary]
+        ReduxStore --> DocSlice[documentSlice: OCR Uploads & Status]
+        ReduxStore --> ChatSlice[chatSlice: Message Thread & Streaming]
+        ReduxStore --> UISlice[uiSlice: Modals & Drawer Visibility]
     end
 
     subgraph Modular API Layer
-        FinanceCtx --> FinAPI[api/finance.js]
+        FinanceSlice --> FinAPI[api/finance.js]
         Dashboard --> CatAPI[api/catalogue.js]
-        ChatDrawer[Chat Drawer] --> ChatAPI[api/chat.js]
-        ChatDrawer -.->|Action Mutation| FinanceCtx
-        DocModal[OCR Upload Modal] --> DocAPI[api/documents.js]
-        DocModal -.->|Upload Mutation| FinanceCtx
+        ChatSlice --> ChatAPI[api/chat.js]
+        DocSlice --> DocAPI[api/documents.js]
     end
 
     subgraph Backend Gateway
@@ -78,15 +80,26 @@ graph TD
 ```text
 frontend/
 ├── index.html                     # HTML5 Shell
-├── package.json                   # Dependencies (React 19, Tailwind v4, Recharts, Vite 8)
+├── package.json                   # Dependencies (React 19, Redux Toolkit, Tailwind v4, Recharts, Vite 8)
 ├── vite.config.js                 # Rollup code splitting & vendor manualChunks
+├── jsconfig.json                  # Path aliases (@/* -> src/*)
 ├── README.md                      # Client architecture specification
 └── src/
-    ├── main.jsx                   # Application bootstrap
-    ├── App.jsx                    # Lazy router, Suspense & FinanceProvider
+    ├── main.jsx                   # Application bootstrap with Redux Provider
+    ├── App.jsx                    # Lazy router, Suspense & Auth subscriber
     ├── index.css                  # Theme tokens, custom utilities & glassmorphism
+    ├── redux/                     # Redux Toolkit State Layer
+    │   ├── store.js               # Central root store
+    │   ├── hooks.js               # Typed useAppDispatch & useAppSelector
+    │   └── slices/                # Domain-Driven Slices
+    │       ├── authSlice.js       # Supabase auth, user sync & thunks
+    │       ├── financeSlice.js    # Transactions, budgets, goals, summary, selectors
+    │       ├── documentSlice.js   # Document list, uploads & deletion
+    │       ├── chatSlice.js       # AI chat thread & drawer state
+    │       └── uiSlice.js         # Modal dialog visibility controls
     ├── api/                       # Decoupled Domain HTTP Modules
     │   ├── client.js              # Base Axios instance with Bearer JWT interceptor
+    │   ├── endpoints.js           # API route constants
     │   ├── auth.js                # Signup, Login, Me, Profile
     │   ├── finance.js             # Transactions, Budgets, Goals, Summary
     │   ├── chat.js                # AI CFO chat & custom API key validator
@@ -95,34 +108,23 @@ frontend/
     │   ├── catalogue.js           # Categories, merchant rules & budget templates
     │   ├── telegram.js            # Link code generation
     │   ├── reports.js             # HTML email reports trigger
-    │   └── index.js               # Centralized export
-    ├── context/
-    │   ├── AuthContext.jsx        # Supabase auth session & user profile
-    │   └── FinanceContext.jsx     # Global refresh bus, active month & cached summary
+    │   └── index.js               # Centralized barrel export
+    ├── features/                  # Domain-Driven UI Modules
+    │   ├── auth/                  # LoginPage, SignupPage
+    │   ├── dashboard/             # DashboardPage with real-time analytics
+    │   ├── transactions/          # TransactionsPage with filters & table
+    │   ├── budgets/               # BudgetsPage & budget cards
+    │   ├── goals/                 # GoalsPage & progress rings
+    │   ├── documents/             # DocumentsPage & DocumentUploadModal
+    │   ├── chat/                  # ChatDrawer AI copilot
+    │   ├── settings/              # ApiKeyModal & TelegramModal
+    │   └── landing/               # LandingPage product showcase
     ├── components/
-    │   ├── Layout.jsx             # App layout with responsive navigation & modals
-    │   ├── ChatDrawer.jsx         # LangGraph AI chat drawer with mutation refresh
-    │   ├── DocumentUploadModal.jsx# Receipt dropzone with streaming upload
-    │   ├── TelegramModal.jsx      # Telegram bot link code generator & copy
-    │   ├── ApiKeyModal.jsx        # Custom Gemini API key manager
-    │   ├── ArthaLogo.jsx          # Vector branding logo
-    │   ├── ProtectedRoute.jsx     # Session authentication guard
-    │   └── ui/                    # Reusable Design System Primitives
-    │       ├── SkeletonLoader.jsx # Shimmer loading states for Suspense
-    │       ├── StatCard.jsx       # KPI card primitive
-    │       ├── CustomSelect.jsx   # Accessible styled dropdown
-    │       ├── PageHeader.jsx     # Standardized page title & actions
-    │       ├── ErrorAlert.jsx     # Toast & inline error banner
-    │       └── EmptyState.jsx     # Empty state display with actions
-    ├── pages/                     # Lazy Loaded Page Views
-    │   ├── Landing.jsx            # Product showcase & hero
-    │   ├── Login.jsx              # Supabase JWT authentication
-    │   ├── Signup.jsx             # New account registration
-    │   ├── Dashboard.jsx          # KPI cards, category donut, spending trends
-    │   ├── Transactions.jsx       # Ledger table, category filters, inline editing
-    │   ├── Budgets.jsx            # Monthly category limits & AI utilization alerts
-    │   ├── Goals.jsx              # Savings targets & deposit progress
-    │   └── Documents.jsx          # Parsed receipts & invoices
+    │   ├── layout/Layout.jsx      # App shell with sidebar, header & modal mounts
+    │   └── common/                # Reusable UI primitives (Badge, StatCard, CustomSelect, etc.)
+    └── routes/                    # Route Definitions & Guards
+        ├── AppRoutes.jsx          # React.lazy() route declarations
+        └── ProtectedRoute.jsx     # Redux-backed auth guard
     └── utils/
         └── financeUtils.js        # Formatting & currency helpers (₹)
 ```
