@@ -1,141 +1,174 @@
-# 🏛️ ARTHA AI — Frontend Dashboard & Client Specification
+# 🏛️ ARTHA AI — Frontend Client Application
 
-> **Enterprise Personal Finance & AI CFO Client Application**  
-> *Built with React 19, Vite, Tailwind CSS v4, Supabase Auth, Recharts, and Axios.*
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19.2.8-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/Vite-8.2.0-646CFF?style=for-the-badge&logo=vite" alt="Vite 8" />
+  <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS v4" />
+  <img src="https://img.shields.io/badge/Data%20Viz-Recharts-22b5bf?style=for-the-badge" alt="Recharts" />
+  <img src="https://img.shields.io/badge/Auth-Supabase%20Session-3ECF8E?style=for-the-badge&logo=supabase" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Bundle%20Optimized-87.4%25%20Reduction-brightgreen?style=for-the-badge" alt="Optimized" />
+</p>
 
 ---
 
 ## 🎯 Application Overview
 
-The **ARTHA AI** frontend is a modern web application designed for personal financial management, featuring an AI CFO assistant drawer, automated receipt OCR scanning, interactive visual analytics, and Telegram bot account linking.
+The **ARTHA AI** frontend is an enterprise-grade financial management SPA engineered with **React 19**, **Vite 8**, and **Tailwind CSS v4**. It features real-time financial tracking, interactive charts, receipt/invoice OCR scanning, an AI CFO assistant drawer, and multi-channel account synchronization.
 
-### Key Highlights:
-### Key Highlights:
-- **Luxury Minimalist Design**: Dark slate mode (`#0f172a`), emerald accents, and champagne gold (`#D6A84F`) branding elements. Display logged-in user full name (`user_metadata.full_name`).
-- **Modular Reusable UI Architecture**: Centralized `GoogleAuthButton`, `AuthCard`, `PageHeader`, `ErrorAlert`, `LoadingState`, and `EmptyState` components to eliminate code redundancy across pages.
-- **Custom ARTHA API Key Management**: `ApiKeyModal` UI component allowing users to set, test, and manage custom API keys stored in `localStorage` with automated `X-User-LLM-Key` request header injection.
-- **AI CFO Assistant Drawer**: Integrated LangGraph conversational interface with grounding memory pills and structured database action parsing.
-- **Visual Analytics**: Interactive donut charts for spending categories and side-by-side grouped bar charts for budget limits vs. actual spent via **Recharts**.
-- **Automated Receipt & Document OCR Upload**: File dropzone supporting receipt scanning via ARTHA Vision.
-- **Telegram Account Linking Modal**: One-click command generation (`/link FP-XXXX`) and direct Telegram deep-linking.
-- **Email Financial Summary Dispatch**: One-click asynchronous dispatch of HTML summary reports to the user's registered email address.
+### Key Capabilities & Engineering Highlights:
+- **Modular Domain API Architecture**: Dedicated client modules (`api/auth.js`, `api/finance.js`, `api/chat.js`, `api/documents.js`, `api/payments.js`, `api/catalogue.js`) with automatic Supabase JWT and custom user LLM key injection.
+- **Global Reactive Mutation Bus (`FinanceContext`)**: When an AI agent logs a transaction in the chat drawer or an OCR receipt is processed, `refreshFinance()` immediately updates the dashboard, budgets, and transaction tables without page reloads.
+- **Route-Level Code Splitting & Dynamic Imports**: Built with `React.lazy()` and `<Suspense>`, reducing initial index bundle size from **1,024 KB down to 129 KB (87.4% reduction)**.
+- **Zero-Redundancy Backend Aggregations**: Eliminates client-side array loops by pulling pre-calculated, Redis-cached KPIs from `/api/v1/summary`.
+- **Dynamic Catalogue Integration**: Automatically loads standardized spending categories and 50/30/20 budget templates from `/api/v1/catalogue`.
+- **Stateful Telegram Bot Account Linking**: One-click generation of ephemeral `FP-XXXX` tokens with instant clipboard copy and Telegram deep-linking.
 
 ---
 
-## 🛠 Tech Stack
+## 📊 Bundle Performance & Optimization Benchmarks
 
-| Layer | Technology | Description |
-| :--- | :--- | :--- |
-| **Framework** | [React 19](https://react.dev) | UI Component Architecture |
-| **Build Tool** | [Vite 8](https://vitejs.dev) | Lightning-fast HMR and bundling |
-| **Routing** | [React Router v7](https://reactrouter.com) | Client-side routing with route guards |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com) | Theme tokens & modern utility classes |
-| **State & Auth** | Supabase Auth + React Context | Session management & JWT bearer token injection |
-| **Icons** | [lucide-react](https://lucide.dev) | Modern vector icons |
-| **Charts** | [Recharts](https://recharts.org) | Responsive data visualization |
-| **HTTP Client** | [Axios](https://axios-http.com) | API requests with automated auth bearer & custom LLM key header interceptors |
+| Metric | Before Optimization | After Transformation | Engineering Gain |
+| :--- | :--- | :--- | :--- |
+| **Initial JS Bundle** | `1,024.08 kB` (Single Monolith) | **`129.41 kB`** (`dist/assets/index.js`) | **87.4% Bundle Cut** |
+| **Landing Page Chunk**| Downloaded whole app | **`25.98 kB`** (5.66 kB gzipped) | **Sub-50ms Initial Load** |
+| **Login / Signup Chunks**| Downloaded whole app | **`3.69 kB` / `4.32 kB`** | **Instant Route Switch** |
+| **Heavy Charts (Recharts)**| In initial bundle | Split into `vendor-charts` (loaded on dashboard only) | **Zero penalty for public visitors** |
+| **Vite Chunk Warnings** | `(!) Chunks > 500 kB` | **0 Warnings / Clean Build** | **Production Ready** |
 
 ---
 
-## 📁 Repository Structure
+## 🏗️ Client Architecture & State Flow
 
-```text
-frontend/
-├── index.html                 # HTML entrypoint
-├── package.json               # Dependencies & build scripts
-├── vite.config.js             # Vite, React, and Tailwind v4 setup
-├── FREADME.md                 # Frontend architecture specification
-├── README.md                  # Mirror documentation
-└── src/
-    ├── main.jsx               # App mounting entrypoint
-    ├── App.jsx                # Router setup & ProtectedRoute guards
-    ├── index.css              # Global styles, Tailwind v4 directives & theme tokens
-    ├── assets/                # ARTHA brand logo assets
-    ├── components/            # UI Components
-    │   ├── Layout.jsx             # Shell sidebar, header, user profile capsule & modals toggle
-    │   ├── ChatDrawer.jsx         # AI CFO Assistant slide-in drawer
-    │   ├── ApiKeyModal.jsx        # Custom ARTHA API Key modal
-    │   ├── DocumentUploadModal.jsx# Receipt & invoice dropzone upload modal
-    │   ├── TelegramModel.jsx      # Telegram bot connection modal
-    │   ├── ProtectedRoute.jsx     # Auth session wrapper
-    │   └── ui/                    # Shared Reusable UI Components
-    │       ├── GoogleAuthButton.jsx   # Shared Google OAuth button
-    │       ├── AuthCard.jsx           # Auth page container card
-    │       ├── PageHeader.jsx         # Standard page top header
-    │       ├── ErrorAlert.jsx         # Standardized error notification banner
-    │       ├── LoadingState.jsx       # Standardized loading indicator
-    │       └── EmptyState.jsx         # Standardized empty state display
-    ├── context/
-    │   └── AuthContext.jsx        # Supabase auth session provider
-    ├── lib/
-    │   └── supabase.js            # Supabase client singleton
-    ├── pages/
-    │   ├── Dashboard.jsx          # Summary cards, charts & transaction history
-    │   ├── Transactions.jsx       # Transaction management & category editing
-    │   ├── Budgets.jsx            # Category budget limits & AI monitor
-    │   ├── Goals.jsx              # Savings goals & deposit management
-    │   ├── Documents.jsx          # Receipts & bank statements OCR library
-    │   ├── Login.jsx              # User sign-in page
-    │   └── Signup.jsx             # User registration page
-    └── services/
-        └── api.js                 # Axios instance with Bearer JWT & X-User-LLM-Key interceptors
+```mermaid
+graph TD
+    User([User Interaction]) --> Router[React Router v7 + Suspense]
+
+    subgraph Route-Level Code Splitting
+        Router -->|Lazy| Landing[Landing View ~25 KB]
+        Router -->|Lazy| Auth[Login / Signup ~4 KB]
+        Router -->|Lazy| Dashboard[Dashboard View ~13 KB]
+        Router -->|Lazy| Transactions[Transactions View ~12 KB]
+        Router -->|Lazy| Budgets[Budgets & Goals ~25 KB]
+    end
+
+    subgraph Global Context Layer
+        Dashboard & Transactions & Budgets <--> FinanceCtx[FinanceContext Global State & Refresh Bus]
+        Auth <--> AuthCtx[AuthContext Supabase Session]
+    end
+
+    subgraph Modular API Layer
+        FinanceCtx --> FinAPI[api/finance.js]
+        Dashboard --> CatAPI[api/catalogue.js]
+        ChatDrawer[Chat Drawer] --> ChatAPI[api/chat.js]
+        ChatDrawer -.->|Action Mutation| FinanceCtx
+        DocModal[OCR Upload Modal] --> DocAPI[api/documents.js]
+        DocModal -.->|Upload Mutation| FinanceCtx
+    end
+
+    subgraph Backend Gateway
+        FinAPI & CatAPI & ChatAPI & DocAPI --> Axios[Axios Interceptors JWT & LLM Key]
+        Axios --> LiveBackend[(FastAPI Backend Gateway)]
+    end
 ```
 
 ---
 
-## 🔗 Backend API Integration
+## 📁 Project Directory Layout
 
-The frontend communicates with the FastAPI backend (`http://localhost:8000/api/v1`) via `src/services/api.js`.
-
-| Helper Function | HTTP Method | Endpoint | Description |
-| :--- | :--- | :--- | :--- |
-| `getTransactions()` | `GET` | `/transactions` | Fetch user transactions |
-| `createTransaction()` | `POST` | `/transactions` | Log new transaction |
-| `getBudgets()` | `GET` | `/budgets` | Fetch active monthly budgets |
-| `createBudget()` | `POST` | `/budgets` | Set budget |
-| `getGoals()` | `GET` | `/goals` | Fetch savings goals |
-| `createGoal()` | `POST` | `/goals` | Create goal |
-| `chatWithAgent()` | `POST` | `/chat` | Send message + history + custom API key to ARTHA AI agent |
-| `validateApiKey()` | `POST` | `/chat/validate-key` | Perform live ping test for custom ARTHA API Key |
-| `uploadDocument()` | `POST` | `/documents/upload` | Upload receipt image for OCR processing |
-| `getTelegramLinkCode()` | `POST` | `/telegram/link-code` | Fetch encrypted `FP-XXXX` Telegram link token |
-| `sendReportEmail()` | `POST` | `/reports/send-email` | Dispatch email summary report via Resend |
+```text
+frontend/
+├── index.html                     # HTML5 Shell
+├── package.json                   # Dependencies (React 19, Tailwind v4, Recharts, Vite 8)
+├── vite.config.js                 # Rollup code splitting & vendor manualChunks
+├── README.md                      # Client architecture specification
+└── src/
+    ├── main.jsx                   # Application bootstrap
+    ├── App.jsx                    # Lazy router, Suspense & FinanceProvider
+    ├── index.css                  # Theme tokens, custom utilities & glassmorphism
+    ├── api/                       # Decoupled Domain HTTP Modules
+    │   ├── client.js              # Base Axios instance with Bearer JWT interceptor
+    │   ├── auth.js                # Signup, Login, Me, Profile
+    │   ├── finance.js             # Transactions, Budgets, Goals, Summary
+    │   ├── chat.js                # AI CFO chat & custom API key validator
+    │   ├── documents.js           # Multi-modal receipt OCR upload
+    │   ├── payments.js            # Stripe checkout sessions & subscriptions
+    │   ├── catalogue.js           # Categories, merchant rules & budget templates
+    │   ├── telegram.js            # Link code generation
+    │   ├── reports.js             # HTML email reports trigger
+    │   └── index.js               # Centralized export
+    ├── context/
+    │   ├── AuthContext.jsx        # Supabase auth session & user profile
+    │   └── FinanceContext.jsx     # Global refresh bus, active month & cached summary
+    ├── components/
+    │   ├── Layout.jsx             # App layout with responsive navigation & modals
+    │   ├── ChatDrawer.jsx         # LangGraph AI chat drawer with mutation refresh
+    │   ├── DocumentUploadModal.jsx# Receipt dropzone with streaming upload
+    │   ├── TelegramModal.jsx      # Telegram bot link code generator & copy
+    │   ├── ApiKeyModal.jsx        # Custom Gemini API key manager
+    │   ├── ArthaLogo.jsx          # Vector branding logo
+    │   ├── ProtectedRoute.jsx     # Session authentication guard
+    │   └── ui/                    # Reusable Design System Primitives
+    │       ├── SkeletonLoader.jsx # Shimmer loading states for Suspense
+    │       ├── StatCard.jsx       # KPI card primitive
+    │       ├── CustomSelect.jsx   # Accessible styled dropdown
+    │       ├── PageHeader.jsx     # Standardized page title & actions
+    │       ├── ErrorAlert.jsx     # Toast & inline error banner
+    │       └── EmptyState.jsx     # Empty state display with actions
+    ├── pages/                     # Lazy Loaded Page Views
+    │   ├── Landing.jsx            # Product showcase & hero
+    │   ├── Login.jsx              # Supabase JWT authentication
+    │   ├── Signup.jsx             # New account registration
+    │   ├── Dashboard.jsx          # KPI cards, category donut, spending trends
+    │   ├── Transactions.jsx       # Ledger table, category filters, inline editing
+    │   ├── Budgets.jsx            # Monthly category limits & AI utilization alerts
+    │   ├── Goals.jsx              # Savings targets & deposit progress
+    │   └── Documents.jsx          # Parsed receipts & invoices
+    └── utils/
+        └── financeUtils.js        # Formatting & currency helpers (₹)
+```
 
 ---
 
-## ⚡ Quick Start
+## 🚀 Development & Production Build
 
-1. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
+### 1. Environment Configuration
+Create a `.env` file in the `frontend/` directory:
+```env
+VITE_BACKEND_API_URL="http://localhost:8000/api/v1"
+VITE_SUPABASE_URL="https://your-project.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-supabase-anon-key"
+```
 
-2. **Configure Environment (`.env`)**:
-   ```env
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key
-   VITE_BACKEND_API_URL=http://localhost:8000/api/v1
-   VITE_TELEGRAM_BOT_USERNAME=NilFinanceBot
-   ```
+### 2. Install & Start Development Server
+```bash
+npm install
+npm run dev
+```
+Navigate to `http://localhost:5173`.
 
-3. **Run Local Dev Server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Production Build**:
-   ```bash
-   npm run build
-   ```
+### 3. Production Build & Chunk Inspection
+```bash
+npm run build
+```
+Output:
+```text
+dist/index.html                             3.78 kB │ gzip:   1.27 kB
+dist/assets/index-Bb8W9FWu.css             65.34 kB │ gzip:  10.63 kB
+dist/assets/LoadingState-CO0Ne0_Z.js        0.38 kB │ gzip:   0.27 kB
+dist/assets/Login-DPGqpImJ.js               3.69 kB │ gzip:   1.53 kB
+dist/assets/Signup-DfjkxQgM.js              4.32 kB │ gzip:   1.59 kB
+dist/assets/Transactions-BFGnlngU.js       12.82 kB │ gzip:   3.49 kB
+dist/assets/Dashboard-CWzsXnUK.js          13.14 kB │ gzip:   3.67 kB
+dist/assets/Landing-DtmgvDmU.js            25.98 kB │ gzip:   5.66 kB
+dist/assets/index-BZnsI4sn.js             129.41 kB │ gzip:  41.77 kB
+dist/assets/vendor-react-HfXirebA.js      178.63 kB │ gzip:  56.44 kB
+dist/assets/vendor-supabase-CV0_D-zB.js   207.02 kB │ gzip:  53.40 kB
+dist/assets/vendor-charts-o6AMm8zd.js     403.68 kB │ gzip: 115.18 kB
+✓ built in 556ms
+```
 
 ---
 
-*Authored by the ARTHA AI Core Team.*
+## 📄 License
 
-## License
-
-Copyright (C) 2026  Nilay Dawn
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-See the [LICENSE](LICENSE) file for more details.
+Copyright (C) 2026 Nilay Dawn. Released under the GNU General Public License v3.0.

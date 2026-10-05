@@ -1,43 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/Layout';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Budgets from './pages/Budgets';
-import Goals from './pages/Goals';
-import Documents from './pages/Documents';
+import { useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '@/redux/store';
+import { useAppDispatch } from '@/redux/hooks';
+import { initializeAuth, setAuthState } from '@/redux/slices/authSlice';
+import { supabase } from '@/lib/supabase';
+import AppRoutes from '@/routes/AppRoutes';
 
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+function AuthSubscriber({ children }) {
+  const dispatch = useAppDispatch();
 
-          {/* Protected Routes Container */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/budgets" element={<Budgets />} />
-              <Route path="/goals" element={<Goals />} />
-              <Route path="/documents" element={<Documents />} />
-            </Route>
-          </Route>
+  useEffect(() => {
+    // 1. Initialize user session and profile on boot
+    dispatch(initializeAuth());
 
-          {/* Catch-all redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
+    // 2. React to external auth events (OAuth callback, token refresh, logout)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      dispatch(
+        setAuthState({
+          session,
+          user: session?.user ?? null,
+        })
+      );
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch]);
+
+  return children;
 }
 
-export default App;
+export default function App() {
+  return (
+    <Provider store={store}>
+      <AuthSubscriber>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthSubscriber>
+    </Provider>
+  );
+}

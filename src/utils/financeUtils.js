@@ -1,8 +1,4 @@
 
-// Shared Finance Utilities & Calculation Helpers
-
-
-
 //  Check if a transaction is an Income entry
 
 export const isIncomeTransaction = (tx) => {
