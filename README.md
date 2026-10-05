@@ -17,8 +17,8 @@ The **ARTHA AI** frontend is an enterprise-grade financial management SPA engine
 
 ### Key Capabilities & Engineering Highlights:
 - **Modular Domain API Architecture**: Dedicated client modules (`api/auth.js`, `api/finance.js`, `api/chat.js`, `api/documents.js`, `api/payments.js`, `api/catalogue.js`) with automatic Supabase JWT and custom user LLM key injection.
-- **Global Reactive Mutation Bus (`FinanceContext`)**: When an AI agent logs a transaction in the chat drawer or an OCR receipt is processed, `refreshFinance()` immediately updates the dashboard, budgets, and transaction tables without page reloads.
-- **Route-Level Code Splitting & Dynamic Imports**: Built with `React.lazy()` and `<Suspense>`, reducing initial index bundle size from **1,024 KB down to 129 KB (87.4% reduction)**.
+- **Centralized Redux Toolkit State Management**: Slices for `financeSlice`, `authSlice`, `documentSlice`, `chatSlice`, and `uiSlice` with granular component subscriptions. When an AI agent logs a transaction in the chat drawer or an OCR receipt is processed, async thunks (`fetchSummary`, `fetchTransactions`, `fetchBudgets`) automatically synchronize global store data without full page reloads or cascading component re-renders.
+- **Route-Level Code Splitting & Dynamic Imports**: Built with `React.lazy()` and `<Suspense>`, reducing initial index bundle size from **1,024 KB down to 97.57 KB (90.4% reduction)**.
 - **Zero-Redundancy Backend Aggregations**: Eliminates client-side array loops by pulling pre-calculated, Redis-cached KPIs from `/api/v1/summary`.
 - **Dynamic Catalogue Integration**: Automatically loads standardized spending categories and 50/30/20 budget templates from `/api/v1/catalogue`.
 - **Stateful Telegram Bot Account Linking**: One-click generation of ephemeral `FP-XXXX` tokens with instant clipboard copy and Telegram deep-linking.
@@ -78,7 +78,7 @@ graph TD
 ## 📁 Project Directory Layout
 
 ```text
-frontend/
+.
 ├── index.html                     # HTML5 Shell
 ├── package.json                   # Dependencies (React 19, Redux Toolkit, Tailwind v4, Recharts, Vite 8)
 ├── vite.config.js                 # Rollup code splitting & vendor manualChunks
@@ -134,7 +134,7 @@ frontend/
 ## 🚀 Development & Production Build
 
 ### 1. Environment Configuration
-Create a `.env` file in the `frontend/` directory:
+Create a `.env` file in the repository root:
 ```env
 VITE_BACKEND_API_URL="http://localhost:8000/api/v1"
 VITE_SUPABASE_URL="https://your-project.supabase.co"
@@ -154,19 +154,28 @@ npm run build
 ```
 Output:
 ```text
-dist/index.html                             3.78 kB │ gzip:   1.27 kB
-dist/assets/index-Bb8W9FWu.css             65.34 kB │ gzip:  10.63 kB
-dist/assets/LoadingState-CO0Ne0_Z.js        0.38 kB │ gzip:   0.27 kB
-dist/assets/Login-DPGqpImJ.js               3.69 kB │ gzip:   1.53 kB
-dist/assets/Signup-DfjkxQgM.js              4.32 kB │ gzip:   1.59 kB
-dist/assets/Transactions-BFGnlngU.js       12.82 kB │ gzip:   3.49 kB
-dist/assets/Dashboard-CWzsXnUK.js          13.14 kB │ gzip:   3.67 kB
-dist/assets/Landing-DtmgvDmU.js            25.98 kB │ gzip:   5.66 kB
-dist/assets/index-BZnsI4sn.js             129.41 kB │ gzip:  41.77 kB
-dist/assets/vendor-react-HfXirebA.js      178.63 kB │ gzip:  56.44 kB
+dist/index.html                             3.94 kB │ gzip:   1.31 kB
+dist/assets/index-qfLuyklT.css             68.54 kB │ gzip:  10.95 kB
+dist/assets/LoadingState-CrhWl5U9.js        0.38 kB │ gzip:   0.26 kB
+dist/assets/ErrorAlert-B_yU6D1p.js          0.39 kB │ gzip:   0.28 kB
+dist/assets/SEOHead-FJJ-aH9F.js             0.41 kB │ gzip:   0.31 kB
+dist/assets/EmptyState-BYHHsPo8.js          0.86 kB │ gzip:   0.41 kB
+dist/assets/CustomSelect-B7-pkFrL.js        2.23 kB │ gzip:   1.10 kB
+dist/assets/SignupPage-KQe9q4-a.js          4.60 kB │ gzip:   1.71 kB
+dist/assets/DocumentsPage-BXk21V39.js       6.23 kB │ gzip:   2.23 kB
+dist/assets/LoginPage-BSPSgJvg.js           7.55 kB │ gzip:   2.58 kB
+dist/assets/BudgetsPage-BRtztPje.js        10.43 kB │ gzip:   3.19 kB
+dist/assets/TransactionsPage-C8-0FxWR.js   12.83 kB │ gzip:   3.48 kB
+dist/assets/vendor-icons-CA-D0eSd.js       12.83 kB │ gzip:   4.68 kB
+dist/assets/DashboardPage-BUQ3_e74.js      13.08 kB │ gzip:   3.69 kB
+dist/assets/GoalsPage-CEAkAZWW.js          14.20 kB │ gzip:   3.28 kB
+dist/assets/LandingPage-w4qoBy28.js        26.00 kB │ gzip:   5.67 kB
+dist/assets/vendor-axios-CRrULflc.js       47.13 kB │ gzip:  17.87 kB
+dist/assets/index-BtmDOM2X.js              97.57 kB │ gzip:  27.51 kB
+dist/assets/vendor-react-Mmml1P4c.js      178.64 kB │ gzip:  56.45 kB
 dist/assets/vendor-supabase-CV0_D-zB.js   207.02 kB │ gzip:  53.40 kB
-dist/assets/vendor-charts-o6AMm8zd.js     403.68 kB │ gzip: 115.18 kB
-✓ built in 556ms
+dist/assets/vendor-charts-CYCj8MD0.js     407.68 kB │ gzip: 115.62 kB
+✓ built in 458ms
 ```
 
 ---
