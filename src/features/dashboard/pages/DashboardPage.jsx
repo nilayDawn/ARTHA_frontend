@@ -98,20 +98,26 @@ const DashboardPage = () => {
       .forEach((m) => {
         opts.push({ label: `Statement Period (${m})`, value: m });
       });
+
+    if (selectedMonth && !opts.some((o) => o.value === selectedMonth)) {
+      opts.push({ label: `Statement Period (${selectedMonth})`, value: selectedMonth });
+    }
+
     return opts;
-  }, [availableMonths, currentMonthStr]);
+  }, [availableMonths, currentMonthStr, selectedMonth]);
 
   // Extract KPIs from cached summary
   const monthlyIncome = summaryData?.total_income ?? 0;
-  const totalExpenses = summaryData?.total_expense ?? 0;
-  const savings = summaryData?.net_savings ?? Math.max(0, monthlyIncome - totalExpenses);
+  const totalExpenses = summaryData?.total_expense ?? summaryData?.total_expenses ?? 0;
+  const savings = summaryData?.net_savings ?? summaryData?.savings ?? Math.max(0, monthlyIncome - totalExpenses);
   const savingsRate = summaryData?.savings_rate ?? (monthlyIncome > 0 ? Math.round((savings / monthlyIncome) * 100) : 0);
-  const transactionCount = summaryData?.transaction_count ?? recentTransactions.length;
+  const transactionCount = summaryData?.transaction_count ?? summaryData?.count ?? recentTransactions.length;
 
   // Category Donut Chart Data
   const categoryChartData = useMemo(() => {
-    if (!summaryData?.category_breakdown) return [];
-    return Object.entries(summaryData.category_breakdown).map(([name, value]) => ({
+    const breakdown = summaryData?.category_breakdown || summaryData?.category_spending;
+    if (!breakdown) return [];
+    return Object.entries(breakdown).map(([name, value]) => ({
       name,
       value: Number(value),
     }));
@@ -119,7 +125,7 @@ const DashboardPage = () => {
 
   // Budgets vs Actual Spending
   const budgetVsSpendingData = useMemo(() => {
-    const breakdown = summaryData?.category_breakdown || {};
+    const breakdown = summaryData?.category_breakdown || summaryData?.category_spending || {};
     return budgets.map((b) => {
       const bCat = (b.category || '').toLowerCase();
       // Find matching category in breakdown
@@ -178,7 +184,7 @@ const DashboardPage = () => {
           <Calendar className="w-4 h-4 text-emerald-400 shrink-0" />
           <CustomSelect
             value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
+            onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
             options={monthOptions}
             placeholder="Select Period"
             size="sm"
@@ -191,13 +197,17 @@ const DashboardPage = () => {
         {/* Monthly Income */}
         <div className="artha-kpi-income p-4 rounded-xl space-y-2">
           <div className="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
-            <span>Monthly Income</span>
+            <span>{selectedMonth === 'ALL' ? 'Total Income' : 'Monthly Income'}</span>
             <Wallet className="w-3.5 h-3.5 text-emerald-400" />
           </div>
           <div className="text-2xl font-bold text-emerald-400 tracking-tight">₹{monthlyIncome.toLocaleString()}</div>
           <p className="text-[11px] text-slate-500 font-normal flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-emerald-400" />{' '}
-            {selectedMonth === currentMonthStr ? 'Current Month' : 'Selected Period'}
+            {selectedMonth === 'ALL'
+              ? 'All-Time Cumulative'
+              : selectedMonth === currentMonthStr
+              ? 'Current Month'
+              : `Period (${selectedMonth})`}
           </p>
         </div>
 

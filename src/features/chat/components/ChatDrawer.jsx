@@ -200,7 +200,7 @@ export default function ChatDrawer({ isOpen: propIsOpen, onClose: propOnClose, o
                 </div>
                 <div className="bg-neutral-900 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-neutral-400 text-xs flex items-center gap-2">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-                  <span>Analyzing financial context...</span>
+                  <span>Hold on a bit...</span>
                 </div>
               </div>
             )}

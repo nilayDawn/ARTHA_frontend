@@ -109,16 +109,17 @@ export default function BudgetsPage() {
 
   // Helper to compute category spending from pre-calculated summary
   const getCategorySpending = (category) => {
-    if (!summary?.category_breakdown) return 0;
+    const breakdown = summary?.category_breakdown || summary?.category_spending;
+    if (!breakdown) return 0;
     const catLower = category.toLowerCase();
-    const matched = Object.keys(summary.category_breakdown).find((k) => {
+    const matched = Object.keys(breakdown).find((k) => {
       const kLower = k.toLowerCase();
       if (catLower.includes('food') && (kLower.includes('food') || kLower.includes('dining') || kLower.includes('restaurant'))) {
         return true;
       }
       return kLower === catLower;
     });
-    return matched ? Number(summary.category_breakdown[matched] || 0) : 0;
+    return matched ? Number(breakdown[matched] || 0) : 0;
   };
 
   // Days remaining in current calendar month
