@@ -51,10 +51,6 @@ export const ENDPOINTS = {
   REPORTS: {
     EMAIL: '/reports/send-email',
   },
-  PAYMENTS: {
-    CHECKOUT: '/payments/checkout',
-    SUBSCRIPTION: '/payments/subscription',
-  },
 };
 
 export default ENDPOINTS;

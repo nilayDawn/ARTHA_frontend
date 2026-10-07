@@ -4,7 +4,6 @@ export * from './auth';
 export * from './finance';
 export * from './chat';
 export * from './documents';
-export * from './payments';
 export * from './catalogue';
 export * from './telegram';
 export * from './reports';
