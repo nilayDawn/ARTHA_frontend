@@ -29,10 +29,9 @@ import {
 export default function LandingPage() {
   const user = useAppSelector(selectCurrentUser);
 
-  // Dynamic backend base URL & Swagger Docs link
-  const rawApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1';
-  const backendBaseUrl = rawApiUrl.replace(/\/api\/v1\/?$/, '');
-  const swaggerDocsUrl = `${backendBaseUrl}/docs`;
+  // GitHub Documentation Links (securely decoupled from live Swagger endpoints)
+  const githubDocsUrl = 'https://github.com/nilayDawn/ARTHA_backend/blob/main/README.md';
+  const githubLoadTestReportUrl = 'https://github.com/nilayDawn/ARTHA_backend/blob/main/docs/LOAD_TEST_REPORT.md';
 
   // State for interactive Load Test Modal
   const [showLoadTestModal, setShowLoadTestModal] = useState(false);
@@ -150,9 +149,6 @@ export default function LandingPage() {
             <Link to="/" className="flex items-center gap-2.5">
               <ArthaLogo size="md" showText={true} />
             </Link>
-            <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-400 border border-white/5">
-              portfolio-v2.0
-            </span>
           </div>
 
           {/* Recruiter-Friendly Quick Links */}
@@ -173,16 +169,6 @@ export default function LandingPage() {
               <Activity className="w-3.5 h-3.5 text-emerald-400" />
               <span>Load Test Report</span>
             </button>
-            <a
-              href={swaggerDocsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 text-zinc-300"
-            >
-              <Code2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Swagger Docs (/docs)</span>
-              <ExternalLink className="w-3 h-3 text-zinc-500" />
-            </a>
             <a href="#engineering-notes" className="hover:text-white transition-colors">
               Bottlenecks Solved
             </a>
@@ -191,13 +177,13 @@ export default function LandingPage() {
           {/* Action CTAs */}
           <div className="flex items-center gap-3">
             <a
-              href={swaggerDocsUrl}
+              href={githubDocsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium text-zinc-300 bg-zinc-900 hover:bg-zinc-800 border border-white/10 rounded-lg transition-colors"
             >
               <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-              <span>/docs</span>
+              <span>GitHub Docs</span>
             </a>
 
             {user ? (
@@ -237,23 +223,16 @@ export default function LandingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           
-          {/* Engineering Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-white/10 text-xs text-zinc-300 mb-6 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-mono text-[11px] text-emerald-400">PORTFOLIO PROJECT</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-zinc-400">FastAPI • Clean Hexagonal Architecture • LangGraph</span>
-          </div>
 
-          {/* Honest, Clear Title */}
+          {/* Clear Title */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white max-w-4xl mx-auto leading-[1.18]">
             An intelligent financial engine, engineered for{' '}
             <span className="text-emerald-400 font-extrabold">concurrency</span> & clean architecture.
           </h1>
 
-          {/* Builder's Human Intro */}
+          {/*  Intro */}
           <p className="mt-6 text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed">
-            I built ARTHA to solve personal finance beyond basic CRUD spreadsheets. It features multimodal receipt OCR with Gemini Vision, stateful financial reasoning via LangGraph, real-time Telegram bot sync, and a decoupled hexagonal backend benchmarked against 21,000+ k6 requests.
+            I built ARTHA to solve personal finance beyond basic CRUD spreadsheets. It features multimodal receipt OCR with Gemini Vision, stateful financial reasoning via LangGraph, real-time Telegram bot sync, and a decoupled hexagonal backend benchmarked against 21,000+  requests.
           </p>
 
           {/* Action CTAs */}
@@ -262,7 +241,7 @@ export default function LandingPage() {
               to={user ? "/dashboard" : "/signup"}
               className="px-6 py-3 bg-emerald-400 hover:bg-emerald-300 text-zinc-950 font-bold text-xs sm:text-sm rounded-xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.25)] flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>{user ? "Open Live Dashboard" : "Launch Interactive Demo"}</span>
+              <span>{user ? "Open Live Dashboard" : "Try It"}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -274,27 +253,27 @@ export default function LandingPage() {
               className="px-5 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 font-semibold text-xs sm:text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <Activity className="w-4 h-4 text-emerald-400" />
-              <span>View k6 Load Test Report</span>
+              <span>View Load Test Report</span>
             </button>
 
             <a
-              href={swaggerDocsUrl}
+              href={githubDocsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300 border border-white/10 font-mono text-xs sm:text-sm rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               <Code2 className="w-4 h-4 text-emerald-400" />
-              <span>FastAPI /docs</span>
+              <span>GitHub Specs</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
             </a>
           </div>
 
-          {/* 3. REAL BACKEND BENCHMARKS BAR (Facts, No Fluff) */}
+          {/* 3. REAL BACKEND BENCHMARKS BAR  */}
           <div id="benchmarks" className="mt-14 max-w-5xl mx-auto">
             <div className="text-left mb-3 flex items-center justify-between">
               <span className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
                 <Gauge className="w-3.5 h-3.5 text-emerald-400" />
-                Verified k6 Load Test Performance (Linux x86_64)
+                Verified Load Test Performance (Linux x86_64)
               </span>
               <button
                 onClick={() => setShowLoadTestModal(true)}
@@ -375,7 +354,7 @@ export default function LandingPage() {
               What the platform actually does
             </h2>
             <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-              Every feature below is implemented as an autonomous domain module inside <code className="text-xs font-mono bg-zinc-900 px-1.5 py-0.5 rounded text-zinc-300">backend/app/modules/</code>, ready for independent extraction or containerized deployment.
+              Every feature below is implemented as an autonomous domain module , ready for independent extraction or containerized deployment.
             </p>
           </div>
 
@@ -388,7 +367,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>AI CFO Copilot (LangGraph)</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">modules/agent</span>
+              
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 State machine evaluating user cash flow, budgets, and savings goals. Employs regex heuristic guardrails (&lt;1ms evaluation) against prompt injections and produces structured action payloads for client execution.
@@ -406,7 +385,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>Multimodal Document OCR</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">modules/documents</span>
+            
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Extracts merchant, date, total, and categorized line items from raw receipt images or PDF statements using Google Gemini 2.5 Flash. Built with strict 15MB file-size streaming checks to prevent memory exhaustion attacks.
@@ -424,7 +403,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>Ledger & Aggregations</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">modules/finance</span>
+              
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Full CRUD ledger with automatic income classification, relative date normalizations ("yesterday", "last week"), category budget velocity tracking, and PostgreSQL composite indexes for sub-millisecond filtering.
@@ -442,7 +421,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>Telegram Bot Companion</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">modules/telegram</span>
+                
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Log expenses on mobile by messaging the bot or snapping receipt photos. Authentication relies on single-use 10-minute ephemeral link codes (<code className="text-zinc-300">FP-XXXX</code>) backed by indexed lookup.
@@ -460,7 +439,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>Automated Email Dispatcher</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">modules/reports</span>
+               
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Renders responsive Jinja HTML templates summarizing monthly spending breakdown, budget health, and top expense categories. Dispatches through Resend HTTP API with automatic local SMTP fallback.
@@ -478,7 +457,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-white mb-2 flex items-center justify-between">
                 <span>Security Defense-in-Depth</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">core/security</span>
+  
               </h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Strict Supabase Row Level Security (RLS) guarantees complete tenant isolation. Layered with sliding-window in-memory rate limiting, HTTP security headers, and JWT claims caching (600s TTL).
@@ -578,12 +557,12 @@ export default function LandingPage() {
                 Unit test suite runs completely offline in ~1.85s without cloud dependencies.
               </span>
               <a
-                href={swaggerDocsUrl}
+                href={githubDocsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-emerald-400 hover:underline flex items-center gap-1 font-bold"
               >
-                <span>Inspect OpenAPI Contracts</span>
+                <span>Inspect Architecture Docs & Schemas</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -598,13 +577,13 @@ export default function LandingPage() {
           
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-zinc-800 text-emerald-400 border border-white/5">
-              Live Interactive Console
+              Sample Queries 
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-3 tracking-tight">
-              Test AI Financial Reasoning & Action Payloads
+               AI Financial Reasoning & Action Payloads
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-zinc-400">
-              Click a sample query to see how the agent reasons, checks guardrails, and emits structured action payloads for the client.
+               sample query to see how the agent reasons, checks guardrails, and emits structured action payloads for the client.
             </p>
           </div>
 
@@ -689,7 +668,7 @@ export default function LandingPage() {
               Real Bottlenecks Profiled & Solved
             </h2>
             <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-              Every production system encounters real limitations during load testing. Here are three bottlenecks I discovered through k6 testing and resolved in the codebase:
+              Every production system encounters real limitations during load testing. Here are three bottlenecks I discovered through load testing and resolved in the codebase:
             </p>
           </div>
 
@@ -785,13 +764,13 @@ export default function LandingPage() {
             {/* Direct Links for Technical Review */}
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 font-mono text-xs">
               <a
-                href={swaggerDocsUrl}
+                href={githubDocsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-emerald-400 flex items-center gap-1.5 transition-colors"
               >
                 <Terminal className="w-3.5 h-3.5" />
-                <span>FastAPI /docs</span>
+                <span>GitHub Backend Docs</span>
                 <ExternalLink className="w-3 h-3 text-zinc-500" />
               </a>
 
@@ -803,7 +782,7 @@ export default function LandingPage() {
                 className="px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-200 flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                <span>k6 Report Details</span>
+                <span>Load Test Report Details</span>
               </button>
 
               <Link
@@ -841,7 +820,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <span>ARTHA Backend k6 Load Test Report</span>
+                    <span>ARTHA Backend Load Test Report</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-emerald-400 border border-white/5">
                       21,114 Reqs Total
                     </span>
@@ -1018,9 +997,15 @@ export default function LandingPage() {
 
             {/* Modal Footer */}
             <div className="px-6 py-3.5 border-t border-white/10 flex items-center justify-between bg-zinc-950 text-xs">
-              <span className="font-mono text-zinc-500 text-[11px]">
-                Full report file: backend/docs/LOAD_TEST_REPORT.md
-              </span>
+              <a
+                href={githubLoadTestReportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-emerald-400 hover:underline text-[11px] flex items-center gap-1"
+              >
+                <span>Full report on GitHub: LOAD_TEST_REPORT.md</span>
+                <ExternalLink className="w-3 h-3 text-zinc-500" />
+              </a>
               <button
                 onClick={() => setShowLoadTestModal(false)}
                 className="px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-medium cursor-pointer transition-colors"

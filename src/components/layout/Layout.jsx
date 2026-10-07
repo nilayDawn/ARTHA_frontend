@@ -57,9 +57,7 @@ export default function Layout() {
   const [sendingReport, setSendingReport] = useState(false);
   const [reportNotification, setReportNotification] = useState(null);
 
-  const rawApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1';
-  const backendBaseUrl = rawApiUrl.replace(/\/api\/v1\/?$/, '');
-  const swaggerDocsUrl = `${backendBaseUrl}/docs`;
+  const githubDocsUrl = 'https://github.com/nilayDawn/ARTHA_backend/blob/main/README.md';
 
   const handleLogout = () => {
     dispatch(logoutUserThunk());
@@ -176,13 +174,13 @@ export default function Layout() {
           </button>
 
           <a
-            href={swaggerDocsUrl}
+            href={githubDocsUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center justify-center gap-2 bg-[#0D0D0D] hover:bg-neutral-800/80 text-emerald-400 border border-white/[0.065] hover:border-emerald-500/30 py-2 px-3 rounded-lg text-xs font-mono font-medium artha-btn-interactive cursor-pointer shadow-sm"
           >
             <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-            API /docs (Swagger)
+            Backend GitHub Docs
           </a>
 
           <button
@@ -297,14 +295,14 @@ export default function Layout() {
               </button>
 
               <a
-                href={swaggerDocsUrl}
+                href={githubDocsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 bg-[#0D0D0D] hover:bg-neutral-800/80 text-emerald-400 border border-white/[0.065] hover:border-emerald-500/30 py-2 px-3 rounded-lg text-xs font-mono font-medium artha-btn-interactive cursor-pointer shadow-sm"
               >
                 <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                API /docs (Swagger)
+                Backend GitHub Docs
               </a>
 
               <button
