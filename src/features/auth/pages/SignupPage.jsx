@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock } from 'lucide-react';
-import { useAppDispatch } from '@/redux/hooks';
-import { signUpWithEmail } from '@/redux/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { signUpWithEmail, selectCurrentUser, selectAuthLoading } from '@/redux/slices/authSlice';
 import AuthCard from '@/components/common/AuthCard';
 import GoogleAuthButton from '@/features/auth/components/GoogleAuthButton';
 import SEOHead from '@/components/common/SEOHead';
@@ -33,6 +33,14 @@ export default function SignupPage() {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const authLoading = useAppSelector(selectAuthLoading);
+
+  useEffect(() => {
+    if (currentUser && !authLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [currentUser, authLoading, navigate]);
 
   useEffect(() => {
     if (window.location.hash || window.location.search.includes('error')) {

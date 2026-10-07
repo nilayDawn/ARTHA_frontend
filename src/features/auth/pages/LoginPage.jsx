@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
-import { useAppDispatch } from '@/redux/hooks';
-import { loginWithEmail } from '@/redux/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { loginWithEmail, selectCurrentUser, selectAuthLoading } from '@/redux/slices/authSlice';
 import AuthCard from '@/components/common/AuthCard';
 import GoogleAuthButton from '@/features/auth/components/GoogleAuthButton';
 import PasswordResetModal from '@/features/auth/components/PasswordResetModal';
@@ -34,6 +34,14 @@ export default function LoginPage() {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const authLoading = useAppSelector(selectAuthLoading);
+
+  useEffect(() => {
+    if (currentUser && !authLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [currentUser, authLoading, navigate]);
 
   useEffect(() => {
     // Clear URL parameters if error was parsed to prevent repeated triggers

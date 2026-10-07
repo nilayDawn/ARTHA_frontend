@@ -89,7 +89,7 @@ const initialState = {
   user: null,
   session: null,
   profile: null,
-  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'loading', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
 
